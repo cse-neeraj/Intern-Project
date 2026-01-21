@@ -6,7 +6,7 @@ import Address from "../models/Address.js";
 export const addAddress = async (req, res) => {
   try {
     await Address.create(req.body);
-    res.json({ success: true, message: "Address added sucessfully" })
+    res.json({ success: true, message: "Address added sucessfully" });
   } catch (error){
     console.log(error.message);
     res.json({ success: false, message: error.message });   
