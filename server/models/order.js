@@ -36,7 +36,7 @@ const orderSchema = new mongoose.Schema({
         
       },
       isPaid: {
-        type: String,
+        type: Boolean,
         required: true,
         default:false},
         
@@ -46,7 +46,3 @@ const Order = mongoose.models.order || mongoose.model("order", orderSchema)
 
 export default Order;
   
-
-
-
-
