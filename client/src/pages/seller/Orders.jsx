@@ -27,7 +27,7 @@ const Orders = () => {
   }, []);
 
   return (
-    <div className="no-scrollbar flex-1 h-[95vh] overflow-y-scroll">
+    <div className="flex-1 h-[95vh] overflow-y-scroll">
       <div className="md:p-10 p-4 space-y-4">
         <h2 className="text-lg font-medium">Orders List</h2>
         {orders.map((order, index) => (
@@ -38,9 +38,9 @@ const Orders = () => {
             <div className="flex gap-3 text-sm">
               <img className="w-12 h-12" src={assets?.box_icon} alt="boxIcon" />
               <div>
-                {order.items.map((item, index) => (
+                {order.items?.map((item, index) => (
                   <p key={index} className="font-medium">
-                    {item.product.name}{" "}
+                    {item.product?.name}{" "}
                     <span className="text-primary">x {item.quantity}</span>
                   </p>
                 ))}

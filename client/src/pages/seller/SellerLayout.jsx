@@ -15,6 +15,7 @@ const SellerLayout = () => {
       icon: assets.product_list_icon,
     },
     { name: "Orders", path: "/seller/orders", icon: assets.order_icon },
+    { name: "Categories", path: "/seller/category", icon: assets.product_list_icon },
   ];
   const logout = async () => {
     try{
@@ -68,7 +69,7 @@ const SellerLayout = () => {
             </NavLink>
           ))}
         </div>
-        <div className="flex-1 p-8">
+        <div className="flex-1">
           <Outlet />
         </div>
       </div>

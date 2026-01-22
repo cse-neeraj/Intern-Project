@@ -1,17 +1,21 @@
-import React, { useState } from "react";
-import { assets, categories } from "../../assets/assets";
+import React, { useEffect, useState } from "react";
+import { assets } from "../../assets/assets";
 import { useAppContext } from "../../context/AppContext";
 import { toast } from "react-hot-toast";
 
 const AddProduct = () => {
-  const { token } = useAppContext();
+  const { token, categories, axios, fetchCategories, backendUrl } = useAppContext();
+  console.log(categories)
   const [files, setFiles] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [offerPrice, setOfferPrice] = useState("");
-  const { axios } = useAppContext();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const onSubmitHandler = async (event) => {
     try {
@@ -29,7 +33,7 @@ const AddProduct = () => {
       files.forEach((file) => {
         if (file) formData.append("images", file);
       });
-      const { data } = await axios.post("/api/product/add", formData);
+      const { data } = await axios.post(backendUrl + "/api/product/add", formData);
       if (data.success) {
         toast.success(data.message);
         setName("");
@@ -47,10 +51,10 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="no-scrollbar flex-1 h-[95vh] overflow-y-scroll flex flex-col justify-between">
+    <div className="flex-1 h-[95vh] overflow-y-scroll">
       <form
         onSubmit={onSubmitHandler}
-        className="md:p-10 p-4 space-y-5 max-w-lg"
+        className="md:p-10 p-4 space-y-5 max-w-4xl"
       >
         <div>
           <p className="text-base font-medium">Product Image</p>
@@ -70,15 +74,13 @@ const AddProduct = () => {
                     hidden
                   />
                   <img
-                    className="max-w-24 cursor-pointer"
+                    className="w-24 h-24 object-cover cursor-pointer border border-gray-200 rounded-md"
                     src={
                       files[index]
                         ? URL.createObjectURL(files[index])
                         : assets?.upload_area
                     }
                     alt="uploadArea"
-                    width={100}
-                    height={100}
                   />
                 </label>
               ))}
@@ -126,8 +128,8 @@ const AddProduct = () => {
           >
             <option value="">Select Category</option>
             {categories?.map((item, index) => (
-              <option key={index} value={item.text}>
-                {item.text}
+              <option key={item._id} value={item.name}>
+                {item.name}
               </option>
             ))}
           </select>

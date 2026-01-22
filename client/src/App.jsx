@@ -17,6 +17,7 @@ import SellerLayout from "./pages/seller/SellerLayout";
 import AddProduct from "./pages/seller/AddProduct";
 import ProductList from "./pages/seller/ProductList";
 import Orders from "./pages/seller/Orders";
+import Category from "./pages/seller/Category";
 import Contact from "./pages/Contact";
 import Loading from "./components/Loading";
 
@@ -49,7 +50,9 @@ const App = () => {
             <Route index element={isSeller ? <AddProduct /> : null} />
             <Route path="product-list" element={<ProductList />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="category" element={<Category />} />
           </Route>
+           <Route path="category" element={<Category />} />
         </Routes>
       </div>
       {!isSellerPath && <Footer />}

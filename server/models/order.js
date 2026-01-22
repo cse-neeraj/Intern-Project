@@ -4,45 +4,44 @@ const orderSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: true,
-    ref: "user",
+    ref: "User",
   },
   items: [
     {
       productId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
       },
       quantity: {
         type: Number,
-        required:true,
+        required: true,
       }
-      }],
-      amount: {
-        type: Number,
-        required: true,
-      },
-      address: {
-        type: Object,
-        required: true,
-        ref: "address",
-      },
-      status: {
-        type: String,
-        default: "Order Placed",
+    }
+  ],
+  amount: {
+    type: Number,
+    required: true,
+  },
+  address: {
+    type: Object,
+    required: true,
+  },
+  status: {
+    type: String,
+    default: "Order Placed",
+  },
+  paymentType: {
+    type: String,
+    required: true,
+  },
+  isPaid: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+}, { timestamps: true })
 
-      },
-      paymentType: {
-        type: String,
-        required: true,
-        
-      },
-      isPaid: {
-        type: Boolean,
-        required: true,
-        default:false},
-        
-      },{timestamps: true})
-
-const Order = mongoose.models.order || mongoose.model("order", orderSchema)
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema)
 
 export default Order;
   

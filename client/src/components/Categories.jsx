@@ -1,9 +1,9 @@
 import React from "react";
-import { assets, categories } from "../assets/assets";
+import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 
 const Categories = () => {
-  const { navigate } = useAppContext();
+  const { navigate, categories } = useAppContext();
   return (
     <div className="mt-16">
       <p className="text-2xl md:text-3xl font-medium">Categories</p>
@@ -14,16 +14,16 @@ const Categories = () => {
             className="group cursor-pointer py-5 px-3 gap-2 rounded-lg flex flex-col justify-center items-center"
             style={{ backgroundColor: category.bgColor }}
             onClick={() => {
-              navigate(`/products/${category.path.toLowerCase()}`);
+              navigate(`/products/${category.name.toLowerCase()}`);
               scrollTo(0, 0);
             }}
           >
             <img
               src={category.image}
-              alt={category.text}
+              alt={category.name}
               className="group-hover:scale-108 transition max-w-28"
             />
-            <p className="text-sm font-medium">{category.text}</p>
+            <p className="text-sm font-medium">{category.name}</p>
           </div>
         ))}
       </div>
