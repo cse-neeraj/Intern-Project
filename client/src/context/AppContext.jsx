@@ -20,7 +20,7 @@ export const AppContextProvider = (props) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [isSeller, setIsSeller] = useState(false);
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_API_URL;
   const currency = "₹";
 
   const getProducts = useCallback(async () => {
