@@ -23,3 +23,27 @@ export const getAddress = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 }
+
+// Update Address : /api/address/update
+export const updateAddress = async (req, res) => {
+  try {
+    const { _id, ...data } = req.body;
+    await Address.findByIdAndUpdate(_id, data);
+    res.json({ success: true, message: "Address Updated Successfully" });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+}
+
+// Delete Address : /api/address/delete
+export const deleteAddress = async (req, res) => {
+  try {
+    const { _id } = req.body;
+    await Address.findByIdAndDelete(_id);
+    res.json({ success: true, message: "Address Deleted Successfully" });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+}

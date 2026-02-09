@@ -2,6 +2,7 @@ import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import Stripe from "stripe";
 import User from "../models/User.js";
+import { createNotification } from "./notificationController.js";
 
 // Place Order COD :/api/order/cod
 export const placeOrderCOD = async (req, res) => {
@@ -12,10 +13,19 @@ export const placeOrderCOD = async (req, res) => {
     }
 
     let amount = 0;
+    const orderItems = [];
+
     for (const item of items) {
       const product = await Product.findById(item.product || item.productId);
       if (product) {
-        amount += product.offerPrice * item.quantity;
+        amount += (product.offerPrice || product.price || 0) * item.quantity;
+        orderItems.push({
+          ...item,
+          name: product.name,
+          price: product.offerPrice || product.price,
+          image: product.image || [],
+          category: product.category,
+        });
       }
     }
 
@@ -24,7 +34,7 @@ export const placeOrderCOD = async (req, res) => {
 
     await Order.create({
       userId,
-      items,
+      items: orderItems,
       amount,
       address,
       paymentType: "COD",
@@ -48,16 +58,24 @@ export const placeOrderStripe = async (req, res) => {
 
     let totalAmount = 0;
     const productData = [];
+    const orderItems = [];
 
     for (const item of items) {
       const product = await Product.findById(item.product || item.productId);
       if (product) {
-        const price = product.offerPrice;
+        const price = product.offerPrice || product.price || 0;
         const quantity = item.quantity;
         productData.push({
           name: product.name,
           price: price,
           quantity: quantity,
+        });
+        orderItems.push({
+          ...item,
+          name: product.name,
+          price: price,
+          image: product.image || [],
+          category: product.category,
         });
         totalAmount += price * quantity;
       }
@@ -68,7 +86,7 @@ export const placeOrderStripe = async (req, res) => {
 
     const newOrder = await Order.create({
       userId,
-      items,
+      items: orderItems,
       amount: totalAmount,
       address,
       paymentType: "Online",
@@ -124,6 +142,7 @@ export const stripeWebhooks = async (req, res) => {
       process.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (error) {
+    console.log(`Webhook signature verification failed: ${error.message}`);
     return res.status(400).send(`Webhook Error: ${error.message}`);
   }
   // Handle the event
@@ -190,11 +209,51 @@ export const getUserOrders = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find({
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || "";
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    const skip = (page - 1) * limit;
+
+    const query = {
       $or: [{ paymentType: "COD" }, { isPaid: true }],
-    })
-      .sort({ createdAt: -1 });
-    res.json({ success: true, orders });
+    };
+
+    if (search) {
+      const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = new RegExp(escapedSearch, 'i');
+      const searchConditions = [
+        { "address.firstName": searchRegex },
+        { "address.lastName": searchRegex }
+      ];
+      // If search term looks like an ObjectId, add it to search conditions
+      if (search.match(/^[0-9a-fA-F]{24}$/)) {
+        searchConditions.push({ _id: search });
+      }
+      query.$and = [{ $or: searchConditions }];
+    }
+
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) {
+        query.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = end;
+      }
+    }
+
+    const orders = await Order.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalOrders = await Order.countDocuments(query);
+
+    res.json({ success: true, orders, totalOrders, totalPages: Math.ceil(totalOrders / limit), currentPage: page });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
@@ -204,8 +263,45 @@ export const getAllOrders = async (req, res) => {
 export const updateStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
-    await Order.findByIdAndUpdate(orderId, { status });
+    const order = await Order.findByIdAndUpdate(orderId, { status });
+    if (order) {
+      let message = `Your order #${orderId.slice(-6)} status has been updated to ${status}`;
+      if (status === 'Cancelled') {
+        message = `Your order #${orderId.slice(-6)} has been  by the seller.`;
+      }
+
+      const io = req.app.get('io');
+      if (io) io.to(order.userId.toString()).emit('order_updated', { orderId, status });
+
+      const notification = await createNotification(order.userId, "Order Status Updated", message, "order");
+      if (notification && io) {
+        io.to(order.userId.toString()).emit('new_notification', notification);
+      }
+    }
     res.json({ success: true, message: "Status Updated" });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// User Cancel Order
+export const cancelOrder = async (req, res) => {
+  try {
+    const { userId, orderId } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (order.userId.toString() !== userId) {
+      return res.json({ success: false, message: "Not Authorized" });
+    }
+
+    if (order.status === "Order Placed") {
+      await Order.findByIdAndUpdate(orderId, { status: "Cancelled" });
+      res.json({ success: true, message: "Order Cancelled" });
+    } else {
+      res.json({ success: false, message: "Order cannot be " });
+    }
   } catch (error) {
     console.log(error.message);
     res.json({ success: false, message: error.message });

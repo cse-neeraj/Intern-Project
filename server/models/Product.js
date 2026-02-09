@@ -30,6 +30,17 @@ const ProductSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
+    quantity: {
+      type: Number,
+      required: true,
+    },
+    minOrderQuantity: {
+      type: Number,
+      default: 1,
+    },
+    maxOrderQuantity: {
+      type: Number,
+    },
   },
   { timestamps: true },
 );

@@ -1,4 +1,5 @@
 import express from "express";
+import { updateProductQuantity } from "../controllers/productController.js";
 import { upload } from "../configs/multer.js";
 import authSeller from "../middlewares/authSeller.js";
 import {
@@ -14,5 +15,7 @@ productRouter.post("/add", upload.array(['images']),addProduct);
 productRouter.get("/list", productList);
 productRouter.get("/:id", productById);
 productRouter.post("/stock", authSeller, changeStock);
+productRouter.post("/quantity", authSeller, updateProductQuantity);
+
 
 export default productRouter;

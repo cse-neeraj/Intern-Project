@@ -61,3 +61,25 @@ export const changeStock = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+
+// Update Product Quantity
+export const updateProductQuantity = async (req, res) => {
+    try {
+        const { id, quantity } = req.body;
+        
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.json({ success: false, message: "Product not found" });
+        }
+
+        product.quantity = quantity;
+        await product.save();
+        
+        res.json({ success: true, message: "Quantity updated successfully" });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}

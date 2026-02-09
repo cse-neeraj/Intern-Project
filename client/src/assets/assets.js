@@ -10,6 +10,8 @@ import add_icon from "./add_icon.svg";
 import refresh_icon from "./refresh_icon.svg";
 import product_list_icon from "./product_list_icon.svg";
 import order_icon from "./order_icon.svg";
+import category_icon from "./category_icon.svg";
+import banner_icon from "./banner_icon.svg";
 import upload_area from "./upload_area.png";
 import profile_icon from "./profile_icon.png";
 import menu_icon from "./menu_icon.svg";
@@ -69,6 +71,7 @@ import vanilla_muffins_image from "./vanilla_muffins_image.png";
 import quinoa_image from "./quinoa_image.png";
 import brown_rice_image from "./brown_rice_image.png";
 import barley_image from "./barley_image.png";
+const sold_out_icon = "https://img.freepik.com/premium-vector/sold-out-sign-vector-illustration_123447-734.jpg";
 const contact_image = logo;
 
 export const assets = {
@@ -84,6 +87,8 @@ export const assets = {
   refresh_icon,
   product_list_icon,
   order_icon,
+  category_icon,
+  banner_icon,
   upload_area,
   profile_icon,
   menu_icon,
@@ -100,6 +105,7 @@ export const assets = {
   add_address_image,
   box_icon,
   contact_image,
+  sold_out_icon,
 };
 
 export const categories = [

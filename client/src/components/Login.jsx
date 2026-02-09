@@ -1,119 +1,407 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAppContext } from "../context/AppContext";
-import { toast } from "react-hot-toast";
+import { assets } from "../assets/assets";
+import toast from "react-hot-toast";
 
 const Login = () => {
-  const { setShowUserLogin, setUser, axios ,navigate } = useAppContext();
+  const {
+    setShowUserLogin,
+    backendUrl,
+    setToken,
+    setUser,
+    axios,
+    setIsSeller,
+    navigate,
+    isSeller,
+  } = useAppContext();
 
-  React.useEffect(() => {
+  const [currentState, setCurrentState] = useState("Login");
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const rememberMeRef = useRef(rememberMe);
+
+  const onChangeHandler = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    setData((data) => ({ ...data, [name]: value }));
+  };
+
+  useEffect(() => {
+    rememberMeRef.current = rememberMe;
+  }, [rememberMe]);
+
+  const onLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (currentState === "Seller Login") {
+        const { data: response } = await axios.post(
+          backendUrl + "/api/seller/login",
+          {
+            email: data.email,
+            password: data.password,
+          },
+          { withCredentials: true },
+        );
+
+        if (response.success) {
+          setIsSeller(true);
+          navigate("/seller");
+          setShowUserLogin(false);
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } else if (currentState === "Login") {
+        const { data: response } = await axios.post(
+          backendUrl + "/api/user/login",
+          { email: data.email, password: data.password },
+          { withCredentials: true }
+        );
+        if (response.success) {
+          setToken(response.token);
+          setUser(response.user);
+          if (rememberMe) localStorage.setItem("token", response.token);
+          else sessionStorage.setItem("token", response.token);
+          setShowUserLogin(false);
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } else if (currentState === "Sign Up") {
+        const { data: response } = await axios.post(
+          backendUrl + "/api/user/register",
+          { name: data.name, email: data.email, password: data.password },
+          { withCredentials: true }
+        );
+        if (response.success) {
+          setToken(response.token);
+          setUser(response.user);
+          if (rememberMe) localStorage.setItem("token", response.token);
+          else sessionStorage.setItem("token", response.token);
+          setShowUserLogin(false);
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "unset";
     };
   }, []);
 
-  const [state, setState] = React.useState("login");
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-
-  const onSubmitHandler = async (event) => {
-    try {
-      event.preventDefault();
-
-      const { data } = await axios.post(`/api/user/${state}`, {
-        name,
-        email,
-        password,
-      });
-      if(data.success){
-        navigate('/')
-        setUser(data.user)
-        setShowUserLogin(false)
-        toast.success(data.message)
-      }else{
-        toast.error(data.message)
-      }
-    } catch (error) {
-      toast.error(error.message);
+  useEffect(() => {
+    if (isSeller) {
+      navigate("/seller");
+      setShowUserLogin(false);
     }
-  };
-
+  }, [isSeller, navigate, setShowUserLogin]);
 
   return (
-    <div
-      onClick={() => setShowUserLogin(false)}
-      className="fixed top-0 bottom-0 left-0 right-0 z-[100] flex items-center text-sm text-gray-600 bg-black/50"
-    >
-      <form
-        onSubmit={onSubmitHandler}
-        onClick={(e) => e.stopPropagation()}
-        className="flex flex-col gap-4 m-auto items-start p-8 py-12 w-80 sm:w-[352px] text-gray-500 rounded-lg shadow-xl border border-gray-200 bg-white"
-      >
-        <p className="text-2xl font-medium m-auto">
-          <span className="text-primary">User</span>{" "}
-          {state === "login" ? "Login" : "Sign Up"}
-        </p>
-        {state === "register" && (
-          <div className="w-full">
-            <p>Name</p>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-md transition-all duration-300">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 sm:p-8 relative animate-in fade-in zoom-out duration-300 mx-4 border border-gray-100 overflow-hidden">
+        {/* Decorative Elements */}
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-primary/5 rounded-full blur-2xl pointer-events-none"></div>
+
+        {/* Close Button */}
+        <button
+          onClick={() => setShowUserLogin(false)}
+          className="absolute top-5 right-5 p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all duration-200 z-10"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="w-5 h-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <div className="text-center mb-6">
+          <div className="flex justify-center mb-4">
+            <img src={assets.logo} alt="Logo" className="h-8 w-auto" />
+          </div>
+          <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+            {currentState}
+          </h2>
+          <p className="text-gray-500 mt-2 text-sm font-medium">
+            {currentState === "Seller Login"
+              ? "Log in to your seller dashboard."
+              : currentState === "Sign Up"
+                ? "Create an account to get started."
+                : "Welcome back! Please login to continue."}
+          </p>
+        </div>
+
+        <form
+          id="login-form"
+          onSubmit={onLogin}
+          className="flex flex-col gap-4"
+        >
+          {currentState === "Sign Up" && (
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                  />
+                </svg>
+              </div>
+              <input
+                name="name"
+                onChange={onChangeHandler}
+                value={data.name}
+                type="text"
+                placeholder="Full Name"
+                className="w-full pl-12 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all duration-200 font-medium text-gray-800 placeholder-gray-400 focus:shadow-md"
+                required
+              />
+            </div>
+          )}
+
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
+                />
+              </svg>
+            </div>
             <input
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-              placeholder="type here"
-              className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
-              type="text"
+              name="email"
+              onChange={onChangeHandler}
+              value={data.email}
+              type="email"
+              placeholder="Email Address"
+              className="w-full pl-12 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all duration-200 font-medium text-gray-800 placeholder-gray-400 focus:shadow-md"
               required
             />
           </div>
-        )}
-        <div className="w-full ">
-          <p>Email</p>
-          <input
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
-            placeholder="type here"
-            className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
-            type="email"
-            required
-          />
-        </div>
-        <div className="w-full ">
-          <p>Password</p>
-          <input
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-            placeholder="type here"
-            className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
-            type="password"
-            required
-          />
-        </div>
-        {state === "register" ? (
-          <p>
-            Already have account?{" "}
-            <span
-              onClick={() => setState("login")}
-              className="text-primary cursor-pointer"
+
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+                />
+              </svg>
+            </div>
+            <input
+              name="password"
+              onChange={onChangeHandler}
+              value={data.password}
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className="w-full pl-12 pr-12 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all duration-200 font-medium text-gray-800 placeholder-gray-400 focus:shadow-md"
+              required
+            />
+            <div
+              className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-gray-400 hover:text-gray-600"
+              onClick={() => setShowPassword(!showPassword)}
             >
-              click here
-            </span>
-          </p>
-        ) : (
-          <p>
-            Create an account?{" "}
-            <span
-              onClick={() => setState("register")}
-              className="text-primary cursor-pointer"
-            >
-              click here
-            </span>
-          </p>
-        )}
-        <button className="bg-primary hover:bg-primary-dull transition-all text-white w-full py-2 rounded-md cursor-pointer">
-          {state === "register" ? "Create Account" : "Login"}
-        </button>
-      </form>
+              {showPassword ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              )}
+            </div>
+          </div>
+
+          {(currentState === "Login" || currentState === "Seller Login") && (
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    id="remember"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer accent-primary transition-all hover:scale-110"
+                  />
+                  <label
+                    htmlFor="remember"
+                    className="text-sm text-gray-600 cursor-pointer select-none group-hover:text-gray-800 transition-colors"
+                  >
+                    Remember me
+                  </label>
+                </div>
+                <p className="text-sm text-primary font-medium cursor-pointer hover:underline">
+                  Forgot Password?
+                </p>
+              </div>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2.5 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 text-base tracking-wide mt-2"
+          >
+            {loading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              </>
+            ) : currentState === "Sign Up" ? (
+              "Create Account"
+            ) : (
+              "Login"
+            )}
+          </button>
+
+          {currentState === "Sign Up" && (
+            <div className="flex items-start gap-3 mt-4">
+              <input
+                type="checkbox"
+                id="terms"
+                required
+                className="accent-primary w-5 h-5 cursor-pointer mt-0.5"
+              />
+              <label
+                htmlFor="terms"
+                className="text-sm text-gray-500 cursor-pointer select-none leading-relaxed"
+              >
+                By creating an account, I agree to our{" "}
+                <span className="text-primary font-semibold hover:underline">
+                  Terms of Use
+                </span>{" "}
+                &{" "}
+                <span className="text-primary font-semibold hover:underline">
+                  Privacy Policy
+                </span>
+                .
+              </label>
+            </div>
+          )}
+        </form>
+
+        <div className="mt-6 text-center text-sm text-gray-600 flex flex-col gap-2">
+          {currentState === "Login" ? (
+            <>
+              <p>
+                Don't have an account?{" "}
+                <span
+                  onClick={() => setCurrentState("Sign Up")}
+                  className="text-primary font-bold cursor-pointer hover:underline"
+                >
+                  Sign Up
+                </span>
+              </p>
+              <p>
+                Are you a seller?{" "}
+                <span
+                  onClick={() => setCurrentState("Seller Login")}
+                  className="text-primary font-bold cursor-pointer hover:underline"
+                >
+                  Login Here
+                </span>
+              </p>
+            </>
+          ) : currentState === "Sign Up" ? (
+            <p>
+              Already have an account?{" "}
+              <span
+                onClick={() => setCurrentState("Login")}
+                className="text-primary font-bold cursor-pointer hover:underline"
+              >
+                Login Here
+              </span>
+            </p>
+          ) : currentState === "Seller Login" ? (
+            <p>
+              Not a seller?{" "}
+              <span
+                onClick={() => setCurrentState("Login")}
+                className="text-primary font-bold cursor-pointer hover:underline"
+              >
+                User Login
+              </span>
+            </p>
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 };

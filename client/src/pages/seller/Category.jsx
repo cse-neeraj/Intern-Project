@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { assets } from "../../assets/assets";
 
 const Category = () => {
-  const { categories, axios, fetchCategories, backendUrl } = useAppContext();
+  const { categories, axios, fetchCategories, backendUrl, token } = useAppContext();
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
   const [bgColor, setBgColor] = useState("#ffffff");
@@ -29,7 +29,7 @@ const Category = () => {
       formData.append("name", name);
       formData.append("image", image);
       formData.append("bgColor", bgColor);
-      const { data } = await axios.post(backendUrl + "/api/category/add", formData);
+      const { data } = await axios.post(backendUrl + "/api/category/add", formData, { headers: { token }, withCredentials: true });
       if (data.success) {
         toast.success(data.message);
         setName("");
@@ -53,7 +53,7 @@ const Category = () => {
       return;
     }
     try {
-      const { data } = await axios.delete(backendUrl + `/api/category/delete/${id}`);
+      const { data } = await axios.post(backendUrl + "/api/category/delete", { _id: id }, { headers: { token }, withCredentials: true });
       if (data.success) {
         toast.success(data.message);
         if (fetchCategories) {
@@ -75,7 +75,7 @@ const Category = () => {
       formData.append("bgColor", editBgColor);
       if (editImage) formData.append("image", editImage);
 
-      const { data } = await axios.post(backendUrl + "/api/category/update", formData);
+      const { data } = await axios.post(backendUrl + "/api/category/update", formData, { headers: { token }, withCredentials: true });
       if (data.success) {
         toast.success(data.message);
         setEditId(null);

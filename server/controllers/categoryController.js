@@ -101,3 +101,19 @@ export const updateCategory = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 }
+
+export const deleteCategory = async (req, res) => {
+    try {
+        const { _id } = req.body;
+        const category = await Category.findByIdAndDelete(_id);
+
+        if (!category) {
+            return res.json({ success: false, message: "Category not found" });
+        }
+
+        res.json({ success: true, message: "Category Deleted Successfully" });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}

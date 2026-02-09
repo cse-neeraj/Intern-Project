@@ -16,11 +16,12 @@ export const AppContextProvider = (props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState({});
   const [user, setUser] = useState(null);
+  const [banners, setBanners] = useState([]);
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [isSeller, setIsSeller] = useState(false);
 
-  const backendUrl = import.meta.env.VITE_API_URL;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const currency = "₹";
 
   const getProducts = useCallback(async () => {
@@ -48,6 +49,17 @@ export const AppContextProvider = (props) => {
     } catch (error) {
       console.log(error);
       toast.error(error.message);
+    }
+  }, [backendUrl]);
+
+  const getBanners = useCallback(async () => {
+    try {
+      const { data } = await axios.get(backendUrl + '/api/banner');
+      if (data.success) {
+        setBanners(data.banners);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }, [backendUrl]);
 
@@ -102,10 +114,12 @@ export const AppContextProvider = (props) => {
   useEffect(() => {
     getProducts();
     getCategories();
+    getBanners();
   }, []);
 
   const value = {
     products, setProducts,
+    banners, setBanners, fetchBanners: getBanners,
     categories, setCategories,
     searchQuery, setSearchQuery,
     cartItems, setCartItems,

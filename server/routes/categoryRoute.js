@@ -1,5 +1,5 @@
 import express from 'express';
-import { addCategory, listCategories, removeCategory, updateCategory } from '../controllers/categoryController.js';
+import { addCategory, listCategories, removeCategory, updateCategory, deleteCategory} from '../controllers/categoryController.js';
 import { upload } from '../configs/multer.js';
 import authSeller from '../middlewares/authSeller.js';
 
@@ -9,5 +9,6 @@ categoryRouter.post('/add', upload.single('image'), addCategory);
 categoryRouter.get('/list', listCategories);
 categoryRouter.post('/remove', authSeller, removeCategory);
 categoryRouter.post('/update', upload.single('image'), updateCategory);
+categoryRouter.post('/delete', deleteCategory); 
 
 export default categoryRouter;

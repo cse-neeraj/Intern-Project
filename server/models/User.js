@@ -11,10 +11,17 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    mobile: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
     password: {
       type: String,
       required: true,
     },
+    otp: { type: String, default: null },
+    otpExpire: { type: Number, default: null },
     cartItems: { type: Object, default: {} },
   },
   { minimize: false },
