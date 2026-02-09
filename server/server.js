@@ -78,7 +78,7 @@ try {
 }
 
 // Allow multiple origins
-const allowedOrigins = ["hhttps://intern-project-g1clxyeov-cse-neerajs-projects.vercel.app"];
+const allowedOrigins = ["https://intern-project-g1clxyeov-cse-neerajs-projects.vercel.app"];
 if(process.env.FRONTEND_URL){
   allowedOrigins.push(process.env.FRONTEND_URL);
 }
