@@ -2,6 +2,10 @@ import jwt from "jsonwebtoken";
 
 const authUser = async (req, res, next) => {
   try {
+    if (req.originalUrl.includes("/logout")) {
+      return next();
+    }
+
     const { token } = req.cookies || {};
     console.log("Token from cookies:", token);
 
