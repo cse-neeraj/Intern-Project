@@ -32,7 +32,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://intern-project-g1clxyeov-cse-neerajs-projects.vercel.app/",
+    origin: "https://intern-project-g1clxyeov-cse-neerajs-projects.vercel.app",
     methods: ["GET", "POST"],
     credentials: true,
   },
