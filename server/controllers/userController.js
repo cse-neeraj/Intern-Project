@@ -317,8 +317,3 @@ export const loginWithOtp = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
-
-// Placeholder to prevent server crash due to existing route reference
-export const googleLogin = async (req, res) => {
-  res.json({ success: false, message: "Google login has been removed." });
-};
