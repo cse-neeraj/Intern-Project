@@ -6,7 +6,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import mongoose, { connect } from "mongoose";
 import connectDB from "./configs/db.js";
-import "dotenv/config.js";
+import "dotenv/config";
 import userRouter from "./routes/userRoute.js";
 import sellerRouter from "./routes/sellerRoute.js";
 import path from "path";
