@@ -17,11 +17,12 @@ export const AppContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [user, setUser] = useState(null);
   const [banners, setBanners] = useState([]);
+  const [loadingBanners, setLoadingBanners] = useState(true);
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [isSeller, setIsSeller] = useState(false);
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_API_URL;
   const currency = "₹";
 
   const getProducts = useCallback(async () => {
@@ -52,16 +53,22 @@ export const AppContextProvider = (props) => {
     }
   }, [backendUrl]);
 
-  const getBanners = useCallback(async () => {
-    try {
-      const { data } = await axios.get(backendUrl + '/api/banner');
-      if (data.success) {
-        setBanners(data.banners);
-      }
-    } catch (error) {
-      console.log(error);
+ const getBanners = useCallback(async () => {
+  setLoadingBanners(true);
+  try {
+    const { data } = await axios.get(
+      backendUrl + "/api/home-banners"
+    );
+    if (data.success) {
+      setBanners(data.data);
     }
-  }, [backendUrl]);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoadingBanners(false);
+  }
+}, [backendUrl]);
+
 
   const addToCart = async (itemId) => {
     let cartData = structuredClone(cartItems);
@@ -119,7 +126,7 @@ export const AppContextProvider = (props) => {
 
   const value = {
     products, setProducts,
-    banners, setBanners, fetchBanners: getBanners,
+    banners, setBanners, fetchBanners: getBanners, loadingBanners,
     categories, setCategories,
     searchQuery, setSearchQuery,
     cartItems, setCartItems,

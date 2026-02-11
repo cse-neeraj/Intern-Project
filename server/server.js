@@ -24,15 +24,28 @@ import newsletterRouter from "./routes/newsletterRoute.js";
 import notificationRouter from "./routes/notificationRoute.js";
 import { stripeWebhooks } from "./controllers/orderController.js";
 import notifyRouter from "./routes/notifyRoute.js";   
+import Banner from "./models/Banner.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Allow multiple origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:3002",
+];
+if(process.env.FRONTEND_URL){
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://intern-project-g1clxyeov-cse-neerajs-projects.vercel.app",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -77,11 +90,6 @@ try {
   console.error("Error checking collections:", error);
 }
 
-// Allow multiple origins
-const allowedOrigins = ["https://intern-project-g1clxyeov-cse-neerajs-projects.vercel.app"];
-if(process.env.FRONTEND_URL){
-  allowedOrigins.push(process.env.FRONTEND_URL);
-}
 app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhooks);
 // middleware configuration
 app.use(express.json());
@@ -107,6 +115,16 @@ app.use("/api/contact", contactRouter);
 app.use("/api/newsletter", newsletterRouter);
 app.use("/api/notification", notificationRouter);
 app.use("/api/notify", notifyRouter);
+
+app.get("/api/home-banners", async (req, res) => {
+  try {
+    const banners = await Banner.find({ showBanner: true });
+    res.json({ success: true, data: banners });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+});
 
 app.get("/", (req, res) => {
   res.send("API Working");

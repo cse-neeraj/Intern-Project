@@ -1,4 +1,6 @@
-import React, { use, useEffect } from 'react'
+import React, { useEffect } from 'react'
+import { useAppContext } from '../context/AppContext'
+import { useLocation } from 'react-router-dom'
 
 const Loading = () => {
   const{navigate} = useAppContext()

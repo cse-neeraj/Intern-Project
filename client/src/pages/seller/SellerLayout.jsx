@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAppContext } from "../../context/AppContext";
 import { assets } from "../../assets/assets";
 import { Link, NavLink, Outlet } from "react-router-dom";
@@ -39,6 +39,14 @@ const icons = {
 
 const SellerLayout = () => {
   const { axios, navigate, setIsSeller, backendUrl } = useAppContext();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebarCollapsed');
+    return saved === 'true';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('sidebarCollapsed', isSidebarCollapsed);
+  }, [isSidebarCollapsed]);
 
   const sidebarLinks = [
     { name: "Add Product", path: "/seller", icon: assets.add_icon },
@@ -75,19 +83,29 @@ const SellerLayout = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="flex items-center justify-between px-4 md:px-8 border-b h-16 border-gray-300 py-3 bg-white">
-        <Link to="/">
-          <img
-            src={assets.logo}
-            alt="log"
-            className="cursor-pointer w-34 md:w-38"
-          />
-        </Link>
+      <div className="flex items-center justify-between px-4 md:px-8 border-b h-16 border-gray-200 py-3 bg-white shadow-sm">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors focus:outline-none"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+          <Link to="/">
+            <img
+              src={assets.logo}
+              alt="log"
+              className="cursor-pointer w-32 md:w-36"
+            />
+          </Link>
+        </div>
         <div className="flex items-center gap-5 text-gray-500">
           <div className="relative group">
             <div className="flex items-center gap-3 cursor-pointer">
               <p className="hidden md:block font-medium text-gray-700">Hi! Admin</p>
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 hover:border-primary transition-colors overflow-hidden">
+              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border-2 border-gray-200 hover:border-primary transition-colors overflow-hidden">
                 <img src={assets.profile_icon} className="w-full h-full object-cover opacity-80" alt="Profile" />
               </div>
             </div>
@@ -118,18 +136,21 @@ const SellerLayout = () => {
         </div>
       </div>
       <div className="flex">
-        <div className="md:w-64 w-16 border-r h-[95vh] text-base border-gray-300 pt-4 flex flex-col transition-all duration-300 flex-shrink-0">
+        <div className={`border-r h-[calc(100vh-64px)] text-base border-gray-200 pt-6 flex flex-col transition-all duration-300 flex-shrink-0 bg-white ${isSidebarCollapsed ? 'w-20' : 'w-20 md:w-64'}`}>
           {sidebarLinks.map((item) => (
             <NavLink
               to={item.path}
               key={item.name}
               end={item.path === "/seller"}
               className={({ isActive }) =>
-                `flex items-center py-3 px-4 gap-3 ${isActive ? "border-r-4 md:border-r-[6px] bg-primary/10 border-primary text-primary" : "hover:bg-gray-100/90 border-white"}`
+                `flex items-center py-3.5 px-6 gap-4 transition-all duration-200 overflow-hidden ${isActive ? "border-r-4 border-primary text-primary bg-primary/5 font-semibold" : "text-gray-500 hover:bg-gray-100/90 hover:text-gray-800"}`
               }
+              title={item.name}
             >
-              {typeof item.icon === 'string' ? <img src={item.icon} alt="icon" className="w-7 h-7" /> : item.icon}
-              <p className="md:block hidden text-center">{item.name}</p>
+              <div className="flex-shrink-0">
+                {typeof item.icon === 'string' ? <img src={item.icon} alt="icon" className="w-6 h-6" /> : React.cloneElement(item.icon, { className: 'w-6 h-6' })}
+              </div>
+              <p className={`whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'hidden' : 'hidden md:block'}`}>{item.name}</p>
             </NavLink>
           ))}
         </div>

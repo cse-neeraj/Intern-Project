@@ -90,6 +90,17 @@ const Login = () => {
         } else {
           toast.error(response.message);
         }
+      } else if (currentState === "Forgot Password") {
+        const { data: response } = await axios.post(
+          backendUrl + "/api/user/forgot-password",
+          { email: data.email }
+        );
+        if (response.success) {
+          toast.success(response.message);
+          setCurrentState("Login");
+        } else {
+          toast.error(response.message);
+        }
       }
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
@@ -154,6 +165,8 @@ const Login = () => {
               ? "Log in to your seller dashboard."
               : currentState === "Sign Up"
                 ? "Create an account to get started."
+                : currentState === "Forgot Password"
+                  ? "Enter your email to reset your password."
                 : "Welcome back! Please login to continue."}
           </p>
         </div>
@@ -221,6 +234,7 @@ const Login = () => {
             />
           </div>
 
+          {currentState !== "Forgot Password" && (
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
               <svg
@@ -289,6 +303,7 @@ const Login = () => {
               )}
             </div>
           </div>
+          )}
 
           {(currentState === "Login" || currentState === "Seller Login") && (
             <div className="flex flex-col gap-1">
@@ -308,7 +323,10 @@ const Login = () => {
                     Remember me
                   </label>
                 </div>
-                <p className="text-sm text-primary font-medium cursor-pointer hover:underline">
+                <p 
+                  onClick={() => setCurrentState("Forgot Password")}
+                  className="text-sm text-primary font-medium cursor-pointer hover:underline"
+                >
                   Forgot Password?
                 </p>
               </div>
@@ -326,6 +344,8 @@ const Login = () => {
               </>
             ) : currentState === "Sign Up" ? (
               "Create Account"
+            ) : currentState === "Forgot Password" ? (
+              "Send Reset Link"
             ) : (
               "Login"
             )}
@@ -397,6 +417,16 @@ const Login = () => {
                 className="text-primary font-bold cursor-pointer hover:underline"
               >
                 User Login
+              </span>
+            </p>
+          ) : currentState === "Forgot Password" ? (
+            <p>
+              Remember your password?{" "}
+              <span
+                onClick={() => setCurrentState("Login")}
+                className="text-primary font-bold cursor-pointer hover:underline"
+              >
+                Login Here
               </span>
             </p>
           ) : null}

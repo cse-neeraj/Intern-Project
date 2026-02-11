@@ -70,7 +70,7 @@ const MyOrders = () => {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-gray-50/50">
+    <div className="min-h-screen pt-4 md:pt-10 pb-16 px-4 sm:px-6 lg:px-8 bg-gray-50/50">
       <div className="max-w-5xl mx-auto mb-10">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">My Orders</h1>
         <p className="text-gray-500 mt-2 text-lg">Track your orders, download invoices, and buy again.</p>

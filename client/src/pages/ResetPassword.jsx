@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import toast from 'react-hot-toast';
+import { assets } from '../assets/assets';
 
 const ResetPassword = () => {
   const { userId, token } = useParams();
   const navigate = useNavigate();
-  const { backendUrl, axios, setShowUserLogin } = useAppContext();
+  const { backendUrl, axios } = useAppContext();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const onSubmitHandler = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       return toast.error("Passwords do not match");
@@ -27,7 +28,6 @@ const ResetPassword = () => {
       if (data.success) {
         toast.success(data.message);
         navigate('/');
-        setShowUserLogin(true);
       } else {
         toast.error(data.message);
       }
@@ -39,43 +39,64 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh] px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Reset Password</h2>
-        <form onSubmit={onSubmitHandler} className="flex flex-col gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-              placeholder="Enter new password"
-              required
-              minLength={6}
-            />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+        <div className="text-center">
+           <img
+            className="mx-auto h-12 w-auto"
+            src={assets.logo}
+            alt="BuyFresh"
+          />
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Reset Password</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Enter your new password below.
+          </p>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm space-y-4">
+            <div>
+              <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+              <input
+                id="new-password"
+                name="newPassword"
+                type="password"
+                required
+                className="appearance-none relative block w-full px-3 py-2.5 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm transition-all"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                minLength={6}
+              />
+            </div>
+            <div>
+              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <input
+                id="confirm-password"
+                name="confirmPassword"
+                type="password"
+                required
+                className="appearance-none relative block w-full px-3 py-2.5 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm transition-all"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                minLength={6}
+              />
+            </div>
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-              placeholder="Confirm new password"
-              required
-            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-dull focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all transform hover:-translate-y-0.5 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-primary/30"
+            >
+              {loading ? (
+                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                "Reset Password"
+              )}
+            </button>
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-md hover:bg-primary-dull transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-2 flex justify-center items-center gap-2"
-          >
-            {loading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            ) : null}
-            {loading ? 'Resetting...' : 'Reset Password'}
-          </button>
         </form>
       </div>
     </div>

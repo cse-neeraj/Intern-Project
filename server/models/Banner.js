@@ -7,7 +7,8 @@ const bannerSchema = new mongoose.Schema({
     buttonText: { type: String, default: "Shop Now" },
     buttonLink: { type: String, default: "/products" },
     showBanner: { type: Boolean, default: true },
-    showPages: { type: [String], default: ['home'] }
+    showPages: { type: [String], default: ['home'], required: true },
+    showCategories: { type: [String], default: [] }
 })
 
 const Banner = mongoose.models.banner || mongoose.model("banner", bannerSchema);

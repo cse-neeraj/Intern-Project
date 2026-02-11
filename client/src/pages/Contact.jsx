@@ -74,10 +74,19 @@ const Contact = () => {
     }
   };
 
+  const getGoogleMapsUrl = (address) => {
+    if (!address) return '#';
+    const query = typeof address === 'object' 
+      ? `${address.street || ''}, ${address.city || ''}, ${address.state || ''}, ${address.zipCode || ''}`
+      : address;
+    return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`;
+  };
+
   return (
-    <div className="mt-10">
+    <div className="min-h-screen bg-gray-50">
+      {/* Banner Section */}
       {contactBanners.length > 0 && (
-        <div className="w-full h-[300px] md:h-[400px] rounded-2xl mb-12 relative overflow-hidden shadow-2xl mt-4 group bg-gray-100">
+        <div className="w-full h-[300px] md:h-[450px] relative overflow-hidden group">
           <div 
             className="flex transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] h-full"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -87,22 +96,16 @@ const Contact = () => {
                 <img
                   src={banner.image}
                   alt="Banner"
-                  className="w-full h-full object-cover transform scale-105 group-hover:scale-100 transition-transform duration-[2s]"
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col justify-center px-8 md:px-20">
-                  <div className="max-w-3xl space-y-6">
-                    <h1 className="text-4xl md:text-7xl font-extrabold text-white leading-tight tracking-tight drop-shadow-lg">
+                <div className="absolute inset-0 bg-black/40 flex flex-col justify-center px-6 md:px-20">
+                  <div className="max-w-4xl mx-auto text-center text-white">
+                    <h1 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
                       {banner.title}
                     </h1>
-                    <p className="text-lg md:text-2xl text-gray-100 font-medium leading-relaxed drop-shadow-md max-w-2xl">
+                    <p className="text-lg md:text-xl font-medium drop-shadow-md opacity-90">
                       {banner.description}
                     </p>
-                    <button 
-                        onClick={() => document.getElementById('contact-form').scrollIntoView({ behavior: 'smooth' })}
-                        className="inline-block bg-primary text-white px-8 py-3.5 rounded-full font-bold hover:bg-primary-dull transition-all duration-300 shadow-lg hover:shadow-primary/50 transform hover:-translate-y-1 cursor-pointer"
-                    >
-                        Contact Us
-                    </button>
                   </div>
                 </div>
               </div>
@@ -111,23 +114,23 @@ const Contact = () => {
           
           {contactBanners.length > 1 && (
             <>
-              <button onClick={prevBanner} className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 text-white p-4 rounded-full hover:bg-white hover:text-gray-900 transition-all duration-300 opacity-0 group-hover:opacity-100 transform hover:scale-110 z-10">
+              <button onClick={prevBanner} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-md border border-white/30 text-white p-3 rounded-full hover:bg-white hover:text-gray-900 transition-all duration-300 opacity-0 group-hover:opacity-100 transform hover:scale-110 z-10">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                 </svg>
               </button>
-              <button onClick={nextBanner} className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 text-white p-4 rounded-full hover:bg-white hover:text-gray-900 transition-all duration-300 opacity-0 group-hover:opacity-100 transform hover:scale-110 z-10">
+              <button onClick={nextBanner} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-md border border-white/30 text-white p-3 rounded-full hover:bg-white hover:text-gray-900 transition-all duration-300 opacity-0 group-hover:opacity-100 transform hover:scale-110 z-10">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                 </svg>
               </button>
               
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                 {contactBanners.map((_, idx) => (
                     <button 
                         key={idx}
                         onClick={() => setCurrentIndex(idx)}
-                        className={`h-2 rounded-full transition-all duration-300 ${currentIndex === idx ? 'w-8 bg-white' : 'w-2 bg-white/40 hover:bg-white/60'}`}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${currentIndex === idx ? 'w-8 bg-white' : 'w-2 bg-white/50 hover:bg-white/80'}`}
                     />
                 ))}
               </div>
@@ -136,150 +139,161 @@ const Contact = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        <div className="text-center mb-16">
-          <span className="text-primary font-bold tracking-widest uppercase text-xs">Get in touch</span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-3 mb-6">Contact Us</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            We'd love to hear from you. Visit our store, reach out with questions, or check out our career opportunities.
-          </p>
+      {contactBanners.length === 0 && (
+        <div className="bg-primary/10 py-16 md:py-24 text-center px-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Contact Us</h1>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">We're here to help and answer any question you might have.</p>
         </div>
+      )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          <div className="flex flex-col gap-10">
-            <div id="contact-form" className="bg-white p-8 md:p-10 rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <h3 className="font-bold text-2xl text-gray-800 mb-8">Send us a Message</h3>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 -mt-10 relative z-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Left Column: Form & FAQ */}
+          <div className="lg:col-span-7 flex flex-col gap-8">
+            <div id="contact-form" className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+              <div className="mb-8">
+                <h3 className="font-bold text-2xl text-gray-900">Send us a Message</h3>
+                <p className="text-gray-500 mt-2">Fill out the form below and we'll get back to you shortly.</p>
+              </div>
+              
               <form onSubmit={onSubmitHandler} className="flex flex-col gap-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex flex-col gap-2">
+                  <div className="space-y-2">
                     <label className="text-sm font-semibold text-gray-700">First Name</label>
-                    <div className="relative">
-                      <div className="absolute top-1/2 -translate-y-1/2 left-3.5 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                        </svg>
-                      </div>
-                      <input 
-                        name="firstName" 
-                        value={formData.firstName} 
-                        onChange={onChangeHandler} 
-                        type="text" 
-                        placeholder="type here" 
-                        className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
-                        required 
-                      />
-                    </div>
+                    <input 
+                      name="firstName" 
+                      value={formData.firstName} 
+                      onChange={onChangeHandler} 
+                      type="text" 
+                      placeholder="John" 
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all" 
+                      required 
+                    />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="space-y-2">
                     <label className="text-sm font-semibold text-gray-700">Last Name</label>
-                    <div className="relative">
-                      <div className="absolute top-1/2 -translate-y-1/2 left-3.5 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                        </svg>
-                      </div>
-                      <input 
-                        name="lastName" 
-                        value={formData.lastName} 
-                        onChange={onChangeHandler} 
-                        type="text" 
-                        placeholder="Type here" 
-                        className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
-                        required 
-                      />
-                    </div>
+                    <input 
+                      name="lastName" 
+                      value={formData.lastName} 
+                      onChange={onChangeHandler} 
+                      type="text" 
+                      placeholder="Doe" 
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all" 
+                      required 
+                    />
                   </div>
                 </div>
-                <div className="flex flex-col gap-2">
+                
+                <div className="space-y-2">
                     <label className="text-sm font-semibold text-gray-700">Email Address</label>
-                    <div className="relative">
-                      <div className="absolute top-1/2 -translate-y-1/2 left-3.5 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                        </svg>
-                      </div>
-                      <input 
-                        name="email" 
-                        value={formData.email} 
-                        onChange={onChangeHandler} 
-                        type="email" 
-                        placeholder="john@example.com" 
-                        className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
-                        required 
-                      />
-                    </div>
+                    <input 
+                      name="email" 
+                      value={formData.email} 
+                      onChange={onChangeHandler} 
+                      type="email" 
+                      placeholder="john@example.com" 
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all" 
+                      required 
+                    />
                 </div>
-                <div className="flex flex-col gap-2">
+                
+                <div className="space-y-2">
                     <label className="text-sm font-semibold text-gray-700">Message</label>
-                    <div className="relative">
-                      <div className="absolute top-4 left-3.5 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                        </svg>
-                      </div>
-                      <textarea 
+                    <textarea 
                       name="message" 
                       value={formData.message} 
                       onChange={onChangeHandler} 
                       rows="5" 
                       placeholder="How can we help you?" 
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none transition-all" 
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 resize-none transition-all" 
                       required
                     ></textarea>
-                    </div>
                 </div>
+                
                 <button 
                   type="submit" 
                   disabled={loading} 
-                  className="bg-primary text-white py-4 px-8 rounded-lg hover:bg-primary-dull transition-all w-full font-bold shadow-lg shadow-primary/30 disabled:bg-gray-400 disabled:cursor-not-allowed mt-2 active:scale-[0.98]"
+                  className="w-full bg-primary text-white py-4 px-8 rounded-xl font-bold shadow-lg shadow-primary/30 hover:bg-primary-dull hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98] flex items-center justify-center gap-2"
                 >
-                  {loading ? 'Sending...' : 'Send Message'}
+                  {loading ? (
+                    <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Sending...
+                    </>
+                  ) : (
+                    <>
+                        Send Message
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                        </svg>
+                    </>
+                  )}
                 </button>
               </form>
             </div>
             
-            <div className="bg-white p-8 md:p-10 rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg">
               <h3 className="font-bold text-2xl text-gray-800 mb-6">Frequently Asked Questions</h3>
               <div className="space-y-4">
-                <div className="p-5 bg-gray-50 rounded-xl border border-gray-100 hover:border-primary/30 transition-colors">
-                  <h4 className="font-semibold text-gray-800 text-lg mb-2">What are your delivery hours?</h4>
-                  <p className="text-gray-600 leading-relaxed text-sm">We deliver from 8am to 10pm daily. You can choose your preferred slot during checkout.</p>
-                </div>
-                <div className="p-5 bg-gray-50 rounded-xl border border-gray-100 hover:border-primary/30 transition-colors">
-                  <h4 className="font-semibold text-gray-800 text-lg mb-2">How can I track my order?</h4>
-                  <p className="text-gray-600 leading-relaxed text-sm">You can track your order status in real-time from the 'My Orders' section in your account.</p>
-                </div>
-                <div className="p-5 bg-gray-50 rounded-xl border border-gray-100 hover:border-primary/30 transition-colors">
-                  <h4 className="font-semibold text-gray-800 text-lg mb-2">Do you offer refunds?</h4>
-                  <p className="text-gray-600 leading-relaxed text-sm">Yes, if you are not satisfied with the quality of any product, you can return it at the time of delivery or contact support.</p>
-                </div>
+                {[
+                    { q: "What are your delivery hours?", a: "We deliver from 8am to 10pm daily. You can choose your preferred slot during checkout." },
+                    { q: "How can I track my order?", a: "You can track your order status in real-time from the 'My Orders' section in your account." },
+                    { q: "Do you offer refunds?", a: "Yes, if you are not satisfied with the quality of any product, you can return it at the time of delivery or contact support." }
+                ].map((faq, idx) => (
+                    <div key={idx} className="p-5 bg-gray-50 rounded-xl border border-gray-100 hover:border-primary/30 transition-colors">
+                        <h4 className="font-semibold text-gray-900 text-lg mb-2">{faq.q}</h4>
+                        <p className="text-gray-600 leading-relaxed text-sm">{faq.a}</p>
+                    </div>
+                ))}
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-10">
-            <StoreDetails store={storeInfo} />
+          {/* Right Column: Info & Map */}
+          <div className="lg:col-span-5 flex flex-col gap-8">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <StoreDetails store={storeInfo} />
+            </div>
             
-            <div className="bg-white p-2 rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="w-full h-[500px] rounded-xl overflow-hidden relative z-0">
+            <div className="bg-white p-2 rounded-2xl border border-gray-100 shadow-lg relative group">
+              <div className="w-full h-[400px] rounded-xl overflow-hidden relative z-10">
                 <MapComponent address={storeInfo?.address} />
               </div>
+              {storeInfo?.address && (
+                <a 
+                  href={getGoogleMapsUrl(storeInfo.address)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute bottom-6 right-6 z-20 bg-white text-gray-800 px-4 py-2.5 rounded-xl shadow-lg font-bold text-sm flex items-center gap-2 hover:bg-gray-50 hover:text-primary transition-all transform hover:-translate-y-1 border border-gray-100"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-primary">
+                    <path fillRule="evenodd" d="M8.161 2.58a1.875 1.875 0 0 1 1.678 0l4.993 2.498c.106.052.23.052.336 0l3.869-1.935A1.875 1.875 0 0 1 21.75 4.82v12.485c0 .71-.401 1.36-1.037 1.677l-4.875 2.437a1.875 1.875 0 0 1-1.676 0l-4.994-2.497a.375.375 0 0 0-.336 0l-3.868 1.935A1.875 1.875 0 0 1 2.25 19.18V6.695c0-.71.401-1.36 1.036-1.677l4.875-2.437ZM9 6a.75.75 0 0 1 .75.75V15a.75.75 0 0 1-1.5 0V6.75A.75.75 0 0 1 9 6Zm6.75 3a.75.75 0 0 1 .75.75v8.25a.75.75 0 0 1-1.5 0V9.75a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
+                  </svg>
+                  Get Directions
+                </a>
+              )}
             </div>
 
-            <div className="bg-white p-8 md:p-10 rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <h3 className="font-bold text-2xl text-gray-800 mb-6">Business Hours</h3>
-              <div className="space-y-3 text-gray-600">
-                <div className="flex justify-between border-b border-gray-100 pb-2">
-                  <span>Monday - Friday</span>
-                  <span className="font-medium text-gray-800">9:00 AM - 8:00 PM</span>
+            <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg">
+              <h3 className="font-bold text-xl text-gray-800 mb-6 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-primary">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Business Hours
+              </h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <span className="text-gray-600 font-medium">Monday - Friday</span>
+                  <span className="font-bold text-gray-900 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs">9:00 AM - 8:00 PM</span>
                 </div>
-                <div className="flex justify-between border-b border-gray-100 pb-2">
-                  <span>Saturday</span>
-                  <span className="font-medium text-gray-800">10:00 AM - 6:00 PM</span>
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <span className="text-gray-600 font-medium">Saturday</span>
+                  <span className="font-bold text-gray-900 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs">10:00 AM - 6:00 PM</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Sunday</span>
-                  <span className="font-medium text-gray-800">Closed</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 font-medium">Sunday</span>
+                  <span className="font-bold text-red-600 bg-red-50 px-3 py-1 rounded-full text-xs">Closed</span>
                 </div>
               </div>
             </div>

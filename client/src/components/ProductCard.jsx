@@ -3,7 +3,7 @@ import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, hideCategory }) => {
   const { currency, addToCart, removeFromCart, cartItems, navigate, user, axios, backendUrl } =
     useAppContext();
 
@@ -62,15 +62,23 @@ const ProductCard = ({ product }) => {
           navigate(`/product/${product.category.toLowerCase()}/${product._id}`);
           scrollTo(0, 0);
         }}
-        className={`border border-gray-500/20 rounded-md md:px-4 px-3 py-2 bg-white min-w-56 max-w-56 w-full ${isSoldOut ? 'opacity-70' : ''}`}
+        className={`flex flex-col gap-2 border border-gray-200 rounded-xl bg-white w-full p-3 hover:border-primary/50 transition-all duration-300 ${isSoldOut ? 'opacity-70' : ''}`}
       >
         <div
           onClick={() => navigate(`/product/${product._id}`)}
-          className="group cursor-pointer flex items-center justify-center px-2 relative"
+          className="group cursor-pointer flex items-center justify-center relative aspect-square w-full overflow-hidden rounded-lg"
         >
           {isSoldOut && (
-            <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/40 backdrop-blur-[1px] rounded-md">
-               <span className="bg-white text-gray-500 px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wider shadow-sm border border-gray-200">Sold Out</span>
+            <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/60 backdrop-blur-[1px] rounded-lg">
+               <span className="bg-gray-800 text-white px-3 py-1 text-xs font-bold rounded-md uppercase tracking-wider shadow-sm">Sold Out</span>
+            </div>
+          )}
+          {!isSoldOut && (
+            <div className="absolute top-2 right-2 z-10">
+               <span className="text-[10px] font-bold text-gray-500 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded flex items-center gap-1 shadow-sm border border-gray-100">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-gray-400"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clipRule="evenodd" /></svg>
+                  10 MINS
+               </span>
             </div>
           )}
           {!isSoldOut && isNew && (
@@ -79,77 +87,58 @@ const ProductCard = ({ product }) => {
             </div>
           )}
           <img
-            className={`group-hover:scale-105 transition max-w-26 md:max-w-36 ${isSoldOut ? 'grayscale' : ''}`}
+            className={`group-hover:scale-105 transition-transform duration-500 h-full w-full object-contain ${isSoldOut ? 'grayscale' : ''}`}
             src={product.image[0]}
             alt={product.name}
           />
         </div>
-        <div className="text-gray-500/60 text-sm">
-          <p>{product.category}</p>
-          <p
-            onClick={() => navigate(`/product/${product._id}`)}
-            className="text-gray-700 font-medium text-lg truncate w-full cursor-pointer"
-          >
-            {product.name}
-          </p>
-          <div className="flex items-center gap-0.5">
-            {Array(5)
-              .fill("")
-              .map((_, i) => (
-                <img
-                  key={i}
-                  className="md:w-3.5 w-3"
-                  src={i < 4 ? assets.star_icon : assets.star_dull_icon}
-                  alt=""
-                />
-              ))}
-            <p>(4)</p>
-          </div>
-          <div className="flex items-end justify-between mt-3">
-            <div>
-              <p className="md:text-xl text-base font-medium text-indigo-500">
-                {currency}
-                {product.offerPrice}
-                {""}{" "}
-                <span className="text-gray-500/60 md:text-sm text-xs line-through">
-                  {currency}
-                  {product.price}
-                </span>
-              </p>
-              {isSoldOut && (
-                <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded border border-gray-200 uppercase">Sold Out</span>
-              )}
-            </div>
-            <div className="text-indigo-500">
+        <div className="flex flex-col gap-1 flex-1">
+            <p
+                onClick={() => navigate(`/product/${product._id}`)}
+                className="text-gray-900 font-bold text-sm leading-tight line-clamp-2 cursor-pointer h-10"
+            >
+                {product.name}
+            </p>
+            <p className="text-gray-500 text-xs font-medium">{product.weight || "1 unit"}</p>
+            
+            <div className="flex items-center justify-between mt-auto pt-2">
+                <div className="flex flex-col">
+                    <p className="text-sm font-bold text-gray-900">
+                        {currency}{product.offerPrice}
+                    </p>
+                    {product.price > product.offerPrice && (
+                        <p className="text-xs text-gray-400 line-through">
+                            {currency}{product.price}
+                        </p>
+                    )}
+                </div>
+                
+                <div className="relative">
               {isSoldOut ? (
                  <button 
-                    className="md:w-[80px] w-[64px] h-[34px] text-[10px] md:text-xs font-bold text-gray-500 border border-gray-200 bg-white rounded hover:bg-gray-50 hover:text-gray-700 transition-colors flex items-center justify-center gap-1 shadow-sm"
+                    className="px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-bold text-gray-500 uppercase"
                     onClick={handleNotifyMe}
                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-                    </svg>
                     Notify
                  </button>
               ) : (
                 <>
                 {!cartItems[product._id] ? (
                 <button
-                  className="flex items-center justify-center gap-1 bg-indigo-100 border border-indigo-300 md:w-[80px] w-[64px] h-[34px] rounded text-indigo-600 font-medium"
+                  className="px-6 py-1.5 bg-green-50 border border-green-600 text-green-600 text-xs font-bold rounded-lg uppercase hover:bg-green-600 hover:text-white transition-all shadow-sm"
                   onClick={addInitialItems}
                 >
-                  <img src={assets.cart_icon} alt="cart" />
-                  Add
+                  ADD
                 </button>
               ) : (
-                <div className="flex items-center justify-center gap-2 md:w-20 w-16 h-[34px] bg-indigo-500/25 rounded select-none">
+                <div className="flex items-center bg-green-600 text-white rounded-lg h-8 shadow-sm overflow-hidden">
                   <button
                     onClick={removeItems}
-                    className="cursor-pointer text-md px-2 h-full"
+                    className="px-2.5 h-full hover:bg-green-700 flex items-center justify-center transition-colors"
                   >
                     -
                   </button>
-                  <span className="w-5 text-center">
+                  <span className="px-1 text-xs font-bold min-w-[20px] text-center">
                     {cartItems[product._id]}
                   </span>
                   <button
@@ -162,7 +151,7 @@ const ProductCard = ({ product }) => {
                       }
                       addToCart(product._id);
                     }}
-                    className="cursor-pointer text-md px-2 h-full"
+                    className="px-2.5 h-full hover:bg-green-700 flex items-center justify-center transition-colors"
                   >
                     +
                   </button>
@@ -171,9 +160,9 @@ const ProductCard = ({ product }) => {
                 </>
               )}
             </div>
+            </div>
           </div>
         </div>
-      </div>
     )
   );
 };

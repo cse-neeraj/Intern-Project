@@ -3,30 +3,36 @@ import { assets } from "../assets/assets";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 
-const MainBanner = () => {
+const MainBanner = ({ page = 'home', category }) => {
   const { banners } = useAppContext();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const homeBanners = banners.filter(b => b.showPages.includes('home') && b.showBanner);
+  const activeBanners = banners.filter(b => {
+    if (!b.showBanner) return false;
+    if (category) {
+      return b.showCategories?.includes(category);
+    }
+    return b.showPages?.includes(page);
+  });
 
   const nextBanner = () => {
-    setCurrentIndex((prev) => (prev + 1) % homeBanners.length);
+    setCurrentIndex((prev) => (prev + 1) % activeBanners.length);
   };
 
   const prevBanner = () => {
-    setCurrentIndex((prev) => (prev - 1 + homeBanners.length) % homeBanners.length);
+    setCurrentIndex((prev) => (prev - 1 + activeBanners.length) % activeBanners.length);
   };
 
   useEffect(() => {
-    if (homeBanners.length < 2) return;
+    if (activeBanners.length < 2) return;
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % homeBanners.length);
+      setCurrentIndex((prev) => (prev + 1) % activeBanners.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, [homeBanners.length]);
+  }, [activeBanners.length]);
 
   // If banner data exists and is explicitly disabled or not enabled for home, do not render
-  if (homeBanners.length === 0) {
+  if (activeBanners.length === 0) {
     return null;
   }
 
@@ -36,7 +42,7 @@ const MainBanner = () => {
         className="flex transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] h-full"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {homeBanners.map((banner, index) => (
+        {activeBanners.map((banner, index) => (
           <div key={index} className="w-full h-full flex-shrink-0 relative">
             <img
               src={banner?.image || assets.main_banner_bg}
@@ -76,7 +82,7 @@ const MainBanner = () => {
         ))}
       </div>
       
-      {homeBanners.length > 1 && (
+      {activeBanners.length > 1 && (
         <>
           <button onClick={prevBanner} className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 text-white p-4 rounded-full hover:bg-white hover:text-gray-900 transition-all duration-300 opacity-0 group-hover:opacity-100 transform hover:scale-110 z-10 shadow-xl">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
@@ -90,7 +96,7 @@ const MainBanner = () => {
           </button>
           
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-10">
-            {homeBanners.map((_, idx) => (
+            {activeBanners.map((_, idx) => (
                 <button 
                     key={idx}
                     onClick={() => setCurrentIndex(idx)}

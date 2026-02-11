@@ -13,7 +13,7 @@ const getBanners = async (req, res) => {
 
 const addBanner = async (req, res) => {
     try {
-        const { title, description, buttonText, buttonLink, showBanner, showPages } = req.body;
+        const { title, description, buttonText, buttonLink, showBanner, showPages, showCategories } = req.body;
         const imageFile = req.file;
 
         if (!imageFile) {
@@ -22,7 +22,8 @@ const addBanner = async (req, res) => {
 
         const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
         
-        const parsedShowPages = showPages ? JSON.parse(showPages) : ['home'];
+        const parsedShowPages = (showPages && JSON.parse(showPages).length > 0) ? JSON.parse(showPages) : ['home'];
+        const parsedShowCategories = (showCategories && JSON.parse(showCategories).length > 0) ? JSON.parse(showCategories) : [];
 
         const banner = new Banner({
             title,
@@ -31,7 +32,8 @@ const addBanner = async (req, res) => {
             buttonText,
             buttonLink,
             showBanner: showBanner === 'true' || showBanner === true,
-            showPages: parsedShowPages
+            showPages: parsedShowPages,
+            showCategories: parsedShowCategories
         });
 
         await banner.save();
@@ -45,7 +47,7 @@ const addBanner = async (req, res) => {
 
 const updateBanner = async (req, res) => {
     try {
-        const { id, title, description, buttonText, buttonLink, showBanner, showPages } = req.body;
+        const { id, title, description, buttonText, buttonLink, showBanner, showPages, showCategories } = req.body;
         const imageFile = req.file;
 
         const banner = await Banner.findById(id);
@@ -58,14 +60,24 @@ const updateBanner = async (req, res) => {
             banner.image = imageUpload.secure_url;
         }
 
-        const parsedShowPages = showPages ? JSON.parse(showPages) : banner.showPages;
+        if (title !== undefined) banner.title = title;
+        if (description !== undefined) banner.description = description;
+        if (buttonText !== undefined) banner.buttonText = buttonText;
+        if (buttonLink !== undefined) banner.buttonLink = buttonLink;
 
-        banner.title = title;
-        banner.description = description;
-        banner.buttonText = buttonText;
-        banner.buttonLink = buttonLink;
-        banner.showBanner = showBanner === 'true' || showBanner === true;
-        banner.showPages = parsedShowPages;
+        if (showBanner !== undefined) {
+            banner.showBanner = showBanner === 'true' || showBanner === true;
+        }
+
+        if (showPages !== undefined) {
+            const parsedShowPages = JSON.parse(showPages);
+            banner.showPages = parsedShowPages;
+        }
+
+        if (showCategories !== undefined) {
+            const parsedShowCategories = JSON.parse(showCategories);
+            banner.showCategories = parsedShowCategories;
+        }
 
         await banner.save();
         res.json({ success: true, message: "Banner Updated" });
