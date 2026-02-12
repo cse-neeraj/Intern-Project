@@ -15,11 +15,11 @@ if (process.env.NODE_ENV === 'production' && !backendUrl) {
 
 const callbackURL = backendUrl 
   ? `${backendUrl.replace(/\/$/, "")}/api/user/google/callback` 
-  : "http://localhost:4000/api/user/google/callback";
+  : "/api/user/google/callback";
 
 console.log("🔵 Google OAuth Config:");
 console.log(`   - Client ID: ${process.env.GOOGLE_CLIENT_ID?.substring(0, 15)}...`);
-console.log(`   - BACKEND_URL: ${backendUrl || "NOT SET (Using localhost)"}`);
+console.log(`   - BACKEND_URL: ${backendUrl || "NOT SET (Using relative path)"}`);
 console.log(`   - Callback URL: ${callbackURL}`);
 
 passport.use(new GoogleStrategy({
