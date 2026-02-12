@@ -6,8 +6,14 @@ const authUser = async (req, res, next) => {
       return next();
     }
 
-    const { token } = req.cookies || {};
-    console.log("Token from cookies:", token);
+    let token = req.cookies?.token;
+
+    // Fallback: Check Authorization header (Bearer token)
+    if (!token && req.headers.authorization?.startsWith("Bearer ")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    console.log("Token:", token ? "Found" : "Missing");
 
     if (!token) {
       return res.json({
