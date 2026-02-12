@@ -10,7 +10,7 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.NODE_ENV === 'production' 
+    callbackURL: process.env.BACKEND_URL 
       ? `${process.env.BACKEND_URL}/api/user/google/callback` 
       : "http://localhost:4000/api/user/google/callback",
   },
