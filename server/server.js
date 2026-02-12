@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
+import passport from "passport";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import mongoose, { connect } from "mongoose";
@@ -25,6 +26,8 @@ import notificationRouter from "./routes/notificationRoute.js";
 import { stripeWebhooks } from "./controllers/orderController.js";
 import notifyRouter from "./routes/notifyRoute.js";   
 import Banner from "./models/Banner.js";
+import "./configs/passport.js";
+import googleAuthRouter from "./routes/googleAuthRoute.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -96,6 +99,7 @@ app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhooks);
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(passport.initialize());
 
 // API Request Logger
 app.use((req, res, next) => {
@@ -103,6 +107,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/api/user", googleAuthRouter);
 app.use("/api/user", userRouter);
 app.use("/api/seller", sellerRouter);
 app.use("/api/product", productRouter);

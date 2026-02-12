@@ -344,7 +344,10 @@ const Login = () => {
 
               <button
                 type="button"
-                onClick={() => window.location.href = `${backendUrl}/api/user/google`}
+                onClick={() => {
+                  toast.loading("Redirecting to Google...");
+                  window.location.href = `${backendUrl}/api/user/google`;
+                }}
                 className="w-full py-2.5 border border-gray-200 text-gray-700 font-bold rounded-2xl shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 flex justify-center items-center gap-2 text-base tracking-wide"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
