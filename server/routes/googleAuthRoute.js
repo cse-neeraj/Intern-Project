@@ -4,7 +4,8 @@ import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 
 const googleAuthRouter = express.Router();
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, "");
+console.log("🔵 Google OAuth Redirecting to Frontend:", frontendUrl);
 
 googleAuthRouter.get('/google', passport.authenticate('google', { session: false, scope: ['profile', 'email'] }));
 

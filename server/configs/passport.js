@@ -7,12 +7,21 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   console.error("❌ Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in .env file");
 }
 
+const backendUrl = process.env.BACKEND_URL ? process.env.BACKEND_URL.trim() : null;
+const callbackURL = backendUrl 
+  ? `${backendUrl.replace(/\/$/, "")}/api/user/google/callback` 
+  : "http://localhost:4000/api/user/google/callback";
+
+console.log("🔵 Google OAuth Config:");
+console.log(`   - Client ID: ${process.env.GOOGLE_CLIENT_ID?.substring(0, 15)}...`);
+console.log(`   - BACKEND_URL: ${backendUrl || "NOT SET (Using localhost)"}`);
+console.log(`   - Callback URL: ${callbackURL}`);
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.BACKEND_URL 
-      ? `${process.env.BACKEND_URL}/api/user/google/callback` 
-      : "http://localhost:4000/api/user/google/callback",
+    callbackURL,
+    proxy: true
   },
   async (accessToken, refreshToken, profile, done) => {
     try {

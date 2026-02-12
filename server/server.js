@@ -132,10 +132,24 @@ app.get("/api/home-banners", async (req, res) => {
   }
 });
 
+app.get("/api/config-check", (req, res) => {
+  res.json({
+    success: true,
+    message: "Environment Check",
+    backendUrl: process.env.BACKEND_URL || "NOT SET (Falling back to localhost)",
+    frontendUrl: process.env.FRONTEND_URL || "NOT SET",
+    nodeEnv: process.env.NODE_ENV || "NOT SET",
+  });
+});
+
 app.get("/", (req, res) => {
   res.send("API Working");
 });
 
 server.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
+  console.log("--- Environment Config ---");
+  console.log("NODE_ENV:", process.env.NODE_ENV);
+  console.log("BACKEND_URL:", process.env.BACKEND_URL);
+  console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
 });
