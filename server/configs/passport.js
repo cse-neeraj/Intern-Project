@@ -2,6 +2,7 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../models/User.js';
 import 'dotenv/config';
+import nodemailer from 'nodemailer';
 
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   console.error("❌ Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in .env file");
@@ -44,6 +45,29 @@ passport.use(new GoogleStrategy({
           password: Math.random().toString(36).slice(-8), // Dummy password for OAuth users
         });
       }
+
+      // Send login notification email
+      try {
+        const transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: process.env.SMTP_PORT,
+          service: process.env.SMTP_HOST ? undefined : 'gmail',
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        });
+
+        await transporter.sendMail({
+          from: process.env.SMTP_USER,
+          to: email,
+          subject: 'Login Notification',
+          text: `Hello ${user.name},\n\nYou have successfully logged in with Google.\n\nIf this wasn't you, please contact support immediately.\n\nBest regards,\nBuyFresh Team`,
+        });
+      } catch (emailError) {
+        console.error("Failed to send login notification email:", emailError);
+      }
+
       return done(null, user);
     } catch (error) {
       console.error("Google Auth Error:", error);
