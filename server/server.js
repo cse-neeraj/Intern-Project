@@ -73,22 +73,26 @@ await connectCloudinary();
 
 // Debugging: Check existing collections on startup
 try {
-  const db = mongoose.connection.db;
-  const collections = await db.listCollections().toArray();
-  console.log("📂 Existing Collections:", collections.map((c) => c.name));
+  if (mongoose.connection.readyState === 1) {
+    const db = mongoose.connection.db;
+    const collections = await db.listCollections().toArray();
+    console.log("📂 Existing Collections:", collections.map((c) => c.name));
 
-  // Fix: Seed categories if empty so .find() doesn't return []
-  const categoryCollection = db.collection("categories");
-  const count = await categoryCollection.countDocuments();
-  if (count === 0) {
-    console.log("⚠️ 'categories' collection is empty. Seeding with a test category...");
-    await categoryCollection.insertOne({
-      name: "Vegetables",
-      image: "https://placehold.co/600x400/png",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    console.log("✅ Seeded 'categories' with 1 document.");
+    // Fix: Seed categories if empty so .find() doesn't return []
+    const categoryCollection = db.collection("categories");
+    const count = await categoryCollection.countDocuments();
+    if (count === 0) {
+      console.log("⚠️ 'categories' collection is empty. Seeding with a test category...");
+      await categoryCollection.insertOne({
+        name: "Vegetables",
+        image: "https://placehold.co/600x400/png",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      console.log("✅ Seeded 'categories' with 1 document.");
+    }
+  } else {
+    console.log("⚠️ Database not connected, skipping collection check.");
   }
 } catch (error) {
   console.error("Error checking collections:", error);

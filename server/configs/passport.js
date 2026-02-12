@@ -23,6 +23,7 @@ console.log(`   - Client ID: ${process.env.GOOGLE_CLIENT_ID?.substring(0, 15)}..
 console.log(`   - BACKEND_URL: ${backendUrl || "NOT SET (Using relative path)"}`);
 console.log(`   - Callback URL: ${callbackURL}`);
 
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -75,3 +76,6 @@ passport.use(new GoogleStrategy({
     }
   }
 ));
+} else {
+  console.warn("⚠️ Google OAuth credentials missing. Google Login will not work.");
+}
