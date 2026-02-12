@@ -61,7 +61,7 @@ const Navbar = () => {
   useEffect(() => {
     if (!user) return;
 
-    const socket = io(backendUrl);
+    const socket = io(backendUrl.replace(/\/$/, ""));
 
     socket.on('connect', () => {
       socket.emit('join', user._id);
@@ -300,6 +300,7 @@ const Navbar = () => {
               Login
             </button>
           ) : (
+            <div className="flex items-center gap-4">
             <div className="relative group">
               <div className="cursor-pointer w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 hover:border-primary transition-colors overflow-hidden">
                   <img src={assets.profile_icon} className="w-full h-full object-cover opacity-80" alt="Profile" />
@@ -343,6 +344,13 @@ const Navbar = () => {
                 </li>
               </ul>
               </div>
+            </div>
+            <button
+              onClick={logout}
+              className="hidden lg:block cursor-pointer px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full font-medium transition-all text-sm"
+            >
+              Logout
+            </button>
             </div>
           )}
         </div>

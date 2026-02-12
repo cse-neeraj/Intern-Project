@@ -28,6 +28,7 @@ import notifyRouter from "./routes/notifyRoute.js";
 import Banner from "./models/Banner.js";
 import "./configs/passport.js";
 import googleAuthRouter from "./routes/googleAuthRoute.js";
+import logger from "./configs/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,7 +42,7 @@ const allowedOrigins = [
   "http://localhost:3002",
 ];
 if(process.env.FRONTEND_URL){
-  allowedOrigins.push(process.env.FRONTEND_URL);
+  allowedOrigins.push(process.env.FRONTEND_URL.replace(/\/$/, ""));
 }
 
 const app = express();
@@ -58,7 +59,7 @@ const io = new Server(server, {
 app.set("io", io);
 
 io.on("connection", (socket) => {
-  console.log("a user connected", socket.id);
+  logger.info(`a user connected ${socket.id}`);
   socket.on("join", (userId) => {
     if (userId) {
       socket.join(userId);
@@ -76,26 +77,25 @@ try {
   if (mongoose.connection.readyState === 1) {
     const db = mongoose.connection.db;
     const collections = await db.listCollections().toArray();
-    console.log("📂 Existing Collections:", collections.map((c) => c.name));
 
     // Fix: Seed categories if empty so .find() doesn't return []
     const categoryCollection = db.collection("categories");
     const count = await categoryCollection.countDocuments();
     if (count === 0) {
-      console.log("⚠️ 'categories' collection is empty. Seeding with a test category...");
+      logger.warn("⚠️ 'categories' collection is empty. Seeding with a test category...");
       await categoryCollection.insertOne({
         name: "Vegetables",
         image: "https://placehold.co/600x400/png",
         createdAt: new Date(),
         updatedAt: new Date(),
       });
-      console.log("✅ Seeded 'categories' with 1 document.");
+      logger.info("✅ Seeded 'categories' with 1 document.");
     }
   } else {
-    console.log("⚠️ Database not connected, skipping collection check.");
+    logger.warn("⚠️ Database not connected, skipping collection check.");
   }
 } catch (error) {
-  console.error("Error checking collections:", error);
+  logger.error(`Error checking collections: ${error.message}`);
 }
 
 app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhooks);
@@ -107,7 +107,7 @@ app.use(passport.initialize());
 
 // API Request Logger
 app.use((req, res, next) => {
-  console.log(`${req.method} request for '${req.url}'`);
+  logger.info(`${req.method} request for '${req.url}'`);
   next();
 });
 
@@ -131,19 +131,9 @@ app.get("/api/home-banners", async (req, res) => {
     const banners = await Banner.find({ showBanner: true });
     res.json({ success: true, data: banners });
   } catch (error) {
-    console.log(error);
+    logger.error(error.message);
     res.json({ success: false, message: error.message });
   }
-});
-
-app.get("/api/config-check", (req, res) => {
-  res.json({
-    success: true,
-    message: "Environment Check",
-    backendUrl: process.env.BACKEND_URL || "NOT SET (Falling back to localhost)",
-    frontendUrl: process.env.FRONTEND_URL || "NOT SET",
-    nodeEnv: process.env.NODE_ENV || "NOT SET",
-  });
 });
 
 app.get("/", (req, res) => {
@@ -151,9 +141,5 @@ app.get("/", (req, res) => {
 });
 
 server.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-  console.log("--- Environment Config ---");
-  console.log("NODE_ENV:", process.env.NODE_ENV);
-  console.log("BACKEND_URL:", process.env.BACKEND_URL);
-  console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
+  logger.info(`Server is running on http://localhost:${port}`);
 });

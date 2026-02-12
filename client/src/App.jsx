@@ -53,6 +53,27 @@ const App = () => {
       }
     };
     checkSellerAuth();
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      setToken(token);
+      const fetchUser = async () => {
+        try {
+          const { data } = await axios.post(backendUrl + '/api/user/is-auth', {}, { headers: { Authorization: `Bearer ${token}` } });
+          if (data.success) {
+            setUser(data.user);
+          } else {
+            localStorage.removeItem('token');
+            setToken('');
+          }
+        } catch (error) {
+          console.log(error);
+          localStorage.removeItem('token');
+          setToken('');
+        }
+      };
+      fetchUser();
+    }
   }, []);
 
   useEffect(() => {

@@ -13,8 +13,6 @@ const authUser = async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
     }
 
-    console.log("Token:", token ? "Found" : "Missing");
-
     if (!token) {
       return res.json({
         success: false,
@@ -23,7 +21,6 @@ const authUser = async (req, res, next) => {
     }
 
     const tokenDecode = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded Token:", tokenDecode);
     if (tokenDecode.id) {
       req.body = req.body || {};
       req.body.userId = tokenDecode.id;

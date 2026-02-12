@@ -3,25 +3,21 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../models/User.js';
 import 'dotenv/config';
 import nodemailer from 'nodemailer';
+import logger from './logger.js';
 
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-  console.error("❌ Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in .env file");
+  logger.error("❌ Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in .env file");
 }
 
 const backendUrl = process.env.BACKEND_URL ? process.env.BACKEND_URL.trim() : null;
 
 if (process.env.NODE_ENV === 'production' && !backendUrl) {
-  console.warn("⚠️  WARNING: NODE_ENV is 'production' but BACKEND_URL is not set. Google Login will likely fail with redirect_uri_mismatch.");
+  logger.warn("⚠️  WARNING: NODE_ENV is 'production' but BACKEND_URL is not set. Google Login will likely fail with redirect_uri_mismatch.");
 }
 
 const callbackURL = backendUrl 
   ? `${backendUrl.replace(/\/$/, "")}/api/user/google/callback` 
   : "/api/user/google/callback";
-
-console.log("🔵 Google OAuth Config:");
-console.log(`   - Client ID: ${process.env.GOOGLE_CLIENT_ID?.substring(0, 15)}...`);
-console.log(`   - BACKEND_URL: ${backendUrl || "NOT SET (Using relative path)"}`);
-console.log(`   - Callback URL: ${callbackURL}`);
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 passport.use(new GoogleStrategy({
@@ -66,16 +62,16 @@ passport.use(new GoogleStrategy({
           text: `Hello ${user.name},\n\nYou have successfully logged in with Google.\n\nIf this wasn't you, please contact support immediately.\n\nBest regards,\nBuyFresh Team`,
         });
       } catch (emailError) {
-        console.error("Failed to send login notification email:", emailError);
+        logger.error(`Failed to send login notification email: ${emailError.message}`);
       }
 
       return done(null, user);
     } catch (error) {
-      console.error("Google Auth Error:", error);
+      logger.error(`Google Auth Error: ${error.message}`);
       return done(error, null);
     }
   }
 ));
 } else {
-  console.warn("⚠️ Google OAuth credentials missing. Google Login will not work.");
+  logger.warn("⚠️ Google OAuth credentials missing. Google Login will not work.");
 }
