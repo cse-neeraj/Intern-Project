@@ -32,7 +32,7 @@ import Profile from "./pages/Profile";
 import SellerLogin from "./pages/seller/SellerLogin";
 
 const App = () => {
-  const { showUserLogin, isSeller, backendUrl, axios, setIsSeller, searchQuery, navigate, products, user, setToken } = useAppContext();
+  const { showUserLogin, isSeller, backendUrl, axios, setIsSeller, searchQuery, navigate, products, user, setToken, setUser } = useAppContext();
   const location = useLocation();
   const isSellerPath = location.pathname.includes("seller");
   const [loading, setLoading] = useState(true);
@@ -72,8 +72,20 @@ const App = () => {
     if (token) {
       setToken(token);
       localStorage.setItem("token", token);
+      
+      const fetchUser = async () => {
+        try {
+          const { data } = await axios.post(backendUrl + '/api/user/is-auth', {}, { headers: { Authorization: `Bearer ${token}` } });
+          if (data.success) {
+            setUser(data.user);
+            toast.success("Login successful");
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchUser();
       navigate("/");
-      toast.success("Login successful");
     }
   }, [location.search]);
 
