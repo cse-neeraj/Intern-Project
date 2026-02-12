@@ -338,7 +338,7 @@ const Cart = () => {
                             {product.name}
                           </h3>
                           <p className="text-sm text-gray-500 mt-0.5 mb-2">
-                            {product.weight || "N/A"}
+                            {product.weight || "1 Unit"}
                           </p>
                           <div className="flex items-center gap-2">
                             <span className="text-xs font-medium text-gray-500">

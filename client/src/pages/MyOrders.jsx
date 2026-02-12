@@ -11,6 +11,7 @@ const MyOrders = () => {
   const [storeInfo, setStoreInfo] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [buyAgainLoading, setBuyAgainLoading] = useState({});
+  const [filter, setFilter] = useState("All");
   const steps = ["Order Placed", "Packing", "Shipped", "Out for delivery", "Delivered"];
 
   const fetchMyOrders = async () => {
@@ -69,15 +70,38 @@ const MyOrders = () => {
     }
   };
 
+  const filteredOrders = myOrders.filter(order => {
+    if (filter === "All") return true;
+    if (filter === "Delivered") return order.status === "Delivered";
+    if (filter === "Cancelled") return order.status === "Cancelled";
+    return true;
+  });
+
   return (
     <div className="min-h-screen pt-4 md:pt-10 pb-16 px-4 sm:px-6 lg:px-8 bg-gray-50/50">
       <div className="max-w-5xl mx-auto mb-10">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">My Orders</h1>
         <p className="text-gray-500 mt-2 text-lg">Track your orders, download invoices, and buy again.</p>
+        
+        <div className="flex flex-wrap gap-3 mt-6">
+            {["All", "Delivered", "Cancelled"].map((status) => (
+                <button
+                    key={status}
+                    onClick={() => setFilter(status)}
+                    className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 ${
+                        filter === status 
+                        ? "bg-primary text-white shadow-lg shadow-primary/30 transform -translate-y-0.5" 
+                        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                    }`}
+                >
+                    {status}
+                </button>
+            ))}
+        </div>
       </div>
 
       <div className="max-w-5xl mx-auto space-y-8">
-        {myOrders.length === 0 && (
+        {myOrders.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 bg-white border border-gray-200 rounded-2xl shadow-sm text-center">
                 <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                     <img src={assets.box_icon} alt="No orders" className="w-10 h-10 opacity-20" />
@@ -88,9 +112,18 @@ const MyOrders = () => {
                     Start Shopping
                 </button>
             </div>
-        )}
-
-        {myOrders.map((order, index) => (
+        ) : filteredOrders.length === 0 ? (
+             <div className="flex flex-col items-center justify-center py-20 bg-white border border-gray-200 rounded-2xl shadow-sm text-center">
+                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-gray-400">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                    </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-1">No {filter.toLowerCase()} orders found</h3>
+                <p className="text-gray-500 text-sm">Try changing the filter to view other orders.</p>
+            </div>
+        ) : (
+        filteredOrders.map((order, index) => (
           <div
             key={index}
             className="bg-white border border-gray-100 rounded-2xl shadow-lg shadow-gray-200/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/60"
@@ -324,7 +357,7 @@ const MyOrders = () => {
               </div>
             </div>
           </div>
-        ))}
+        )))}
       </div>
     </div>
   );

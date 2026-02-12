@@ -94,7 +94,7 @@ const ProductDetails = () => {
 
   return (
     product && (
-      <div className="mt-4 md:mt-8 px-4 md:px-10 bg-white min-h-screen pb-24 md:pb-0">
+      <div className="mt-4 md:mt-10 px-4 md:px-10 bg-white min-h-screen pb-24 md:pb-0">
         <div className="text-xs text-gray-500 mb-6 flex items-center gap-1">
           <Link to={"/"} className="hover:text-primary transition-colors">Home</Link> 
           <span>/</span>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
+import { assets } from "../../assets/assets";
 
 const SellerLogin = () => {
   const { isSeller, setIsSeller, navigate, axios, backendUrl } = useAppContext();
@@ -40,7 +41,10 @@ const SellerLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl border border-gray-100">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 tracking-tight">
+          <div className="flex justify-center mb-6">
+             <img src={assets.logo} alt="Logo" className="h-12 w-auto" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
             Seller Portal
           </h2>
           <p className="mt-2 text-sm text-gray-600">
@@ -67,7 +71,7 @@ const SellerLogin = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm transition-all"
+                  className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition-all"
                   placeholder="Enter your email"
                 />
               </div>
@@ -90,7 +94,7 @@ const SellerLogin = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm transition-all"
+                  className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition-all"
                   placeholder="Enter your password"
                 />
               </div>
@@ -101,14 +105,27 @@ const SellerLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-dull focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all shadow-lg shadow-primary/30 disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98]"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-dull focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all shadow-lg shadow-primary/30 disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98] transform hover:-translate-y-0.5"
             >
               {loading ? (
                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               ) : (
-                "Sign in"
+                "Sign in to Dashboard"
               )}
             </button>
+          </div>
+          
+          <div className="text-center mt-6">
+             <button 
+                type="button"
+                onClick={() => navigate('/')} 
+                className="text-sm text-gray-500 hover:text-primary transition-colors flex items-center justify-center gap-2 w-full"
+             >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Back to Shop
+             </button>
           </div>
         </form>
       </div>

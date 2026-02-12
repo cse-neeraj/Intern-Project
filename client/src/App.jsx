@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import { Route, Routes, useLocation, Navigate } from "react-router-dom";
 import Home from "./pages/home";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import Cart from "./pages/Cart";
 import ProductDetails from "./pages/ProductDetails";
 import Login from "./components/Login";
@@ -24,20 +24,22 @@ import StoreSettings from "./pages/seller/StoreSettings";
 import ContactRequests from "./pages/seller/ContactRequests";
 import NewsletterSubscribers from "./pages/seller/NewsletterSubscribers";
 import AddNotification from "./pages/seller/AddNotification";
-import Banner from "./components/Banner";
 import Inventory from "./pages/seller/Inventory";
 import MySubscriptions from "./pages/MySubscriptions";
 import ProductSubscribers from "./pages/seller/ProductSubscribers";
 import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
+import SellerLogin from "./pages/seller/SellerLogin";
 
 const App = () => {
-  const { showUserLogin, isSeller, backendUrl, axios, setIsSeller } = useAppContext();
+  const { showUserLogin, isSeller, backendUrl, axios, setIsSeller, searchQuery, navigate, products, user, setToken } = useAppContext();
   const location = useLocation();
   const isSellerPath = location.pathname.includes("seller");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.documentElement.style.scrollBehavior = "smooth";
+
     const checkSellerAuth = async () => {
       try {
         const { data } = await axios.get(backendUrl + '/api/seller/is-auth', { withCredentials: true });
@@ -52,6 +54,28 @@ const App = () => {
     };
     checkSellerAuth();
   }, []);
+
+  useEffect(() => {
+    if (searchQuery && !isSellerPath) {
+      const matches = products.filter((product) => product.name.toLowerCase().includes(searchQuery.toLowerCase()));
+      if (matches.length === 1) {
+        navigate(`/product/${matches[0].category.toLowerCase()}/${matches[0]._id}`);
+      } else if (location.pathname !== "/products") {
+        navigate("/products");
+      }
+    }
+  }, [searchQuery, products]);
+
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const token = query.get("token");
+    if (token) {
+      setToken(token);
+      localStorage.setItem("token", token);
+      navigate("/");
+      toast.success("Login successful");
+    }
+  }, [location.search]);
 
   if (loading) {
     return (
@@ -103,9 +127,6 @@ const App = () => {
       />
 
       <div className={`${isSellerPath ? "" : "px-6 md:px-16 lg:px-24"}`}>
-        {!isSellerPath && location.pathname.startsWith("/products") && (
-          <Banner />
-        )}
         <Routes>
           <Route path="/" element={<Home />} />
 
@@ -121,9 +142,10 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
 
           <Route path="/contact" element={<Contact />} />
+          <Route path="/seller-login" element={isSeller ? <Navigate to="/seller" /> : user ? <Navigate to="/" /> : <SellerLogin />} />
           <Route
             path="/seller"
-            element={isSeller ? <SellerLayout /> : <Navigate to="/" />}
+            element={isSeller ? <SellerLayout /> : <Navigate to="/seller-login" />}
           >
             <Route index element={isSeller ? <AddProduct /> : null} />
             <Route path="product-list" element={<ProductList />} />

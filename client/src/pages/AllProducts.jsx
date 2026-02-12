@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import ProductCard from "../components/ProductCard";
 import { assets } from "../assets/assets";
+import Banner from "../components/Banner";
 
 const AllProducts = () => {
   const { products, searchQuery, navigate } = useAppContext();
@@ -22,9 +23,10 @@ const AllProducts = () => {
   }, [searchQuery, products]);
 
   return (
-    <div className="mt-8 md:mt-10 px-4 md:px-10">
+    <div className="mt-4 md:mt-10 px-4 md:px-10">
+      {!searchQuery && <Banner />}
       <div id="all-products" className="text-2xl font-medium uppercase scroll-mt-24">
-        <p>All PRODUCTS</p>
+        <p>{searchQuery ? "Search Results" : "All PRODUCTS"}</p>
         <div className="w-16 h-0.5 bg-primary rounded-full"></div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 mt-6">

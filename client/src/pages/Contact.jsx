@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import MapComponent from "../components/MapComponent";
@@ -83,10 +84,10 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 mt-4 px-4 md:mt-10 md:px-10">
       {/* Banner Section */}
       {contactBanners.length > 0 && (
-        <div className="w-full h-[300px] md:h-[450px] relative overflow-hidden group">
+        <div className="w-full h-[300px] md:h-[400px] relative overflow-hidden group rounded-2xl shadow-2xl mt-4">
           <div 
             className="flex transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] h-full"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -100,12 +101,29 @@ const Contact = () => {
                 />
                 <div className="absolute inset-0 bg-black/40 flex flex-col justify-center px-6 md:px-20">
                   <div className="max-w-4xl mx-auto text-center text-white">
-                    <h1 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
+                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4 drop-shadow-lg">
                       {banner.title}
                     </h1>
                     <p className="text-lg md:text-xl font-medium drop-shadow-md opacity-90">
                       {banner.description}
                     </p>
+                    {banner.buttonText && (
+                      <div className="mt-4 md:mt-6">
+                        <a
+                          href="#contact-form"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" });
+                          }}
+                          className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dull text-white font-bold px-6 py-2.5 md:px-8 md:py-3 rounded-full shadow-lg transition-all transform hover:-translate-y-0.5 text-sm md:text-base"
+                        >
+                          {banner.buttonText}
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                          </svg>
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

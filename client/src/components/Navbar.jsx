@@ -104,12 +104,6 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    if (searchQuery.length > 0) {
-      navigate("/products");
-    }
-  }, [searchQuery]);
-
-  useEffect(() => {
     const handleClickOutside = (event) => {
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
         setIsNotificationOpen(false);
