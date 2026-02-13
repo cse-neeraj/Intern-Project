@@ -3,6 +3,8 @@ import { useAppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import toast from "react-hot-toast";
 
+import AddAddressModal from "../components/AddAddressModal";
+
 const Cart = () => {
   const {
     products,
@@ -24,6 +26,7 @@ const Cart = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [paymentOptions, setPaymentOptions] = useState("COD");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editAddress, setEditAddress] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -464,128 +467,118 @@ const Cart = () => {
           </div>
 
           <div className="lg:w-[380px] w-full">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-14 md:top-20">
-              <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Order Summary
-              </h2>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 sticky top-20 overflow-hidden">
+              <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
+                <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-primary">
+                    <path fillRule="evenodd" d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.838 1.681l-.902 11.728c-.02.261.187.485.448.513a2.5 2.5 0 001.378.149l2.768-.692 3.1 1.55a2.5 2.5 0 002.24 0l3.1-1.55 2.768.692a2.5 2.5 0 001.6-.263.606.606 0 00.187-.662l-.902-11.728c-.074-.957-.878-1.681-1.838-1.681H16.5V6a4.5 4.5 0 10-9 0zM12 3a3 3 0 00-3 3v.75h6V6a3 3 0 00-3-3zm-3 8.25a3 3 0 106 0v-.75a.75.75 0 011.5 0v.75a4.5 4.5 0 11-9 0v-.75a.75.75 0 011.5 0v.75z" clipRule="evenodd" />
+                  </svg>
+                  Order Summary
+                </h2>
+              </div>
 
-              <div className="space-y-6">
-                {/* Delivery Address */}
+              <div className="p-6 space-y-6">
+                {/* Delivery Address Section */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <p className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                      Delivery Address
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                      Delivery To
                     </p>
                     <button
                       onClick={() => setShowAddress(!showAddress)}
-                      className="text-primary text-sm font-medium hover:text-primary-dull transition-colors"
+                      className="text-primary text-xs font-bold hover:text-primary-dull transition-colors bg-primary/5 px-2 py-1 rounded-md"
                     >
                       {user
                         ? selectedAddress
-                          ? "Change"
+                          ? "CHANGE"
                           : addresses.length > 0
-                            ? "Select"
-                            : "Add"
-                        : "Add"}
+                            ? "SELECT"
+                            : "ADD"
+                        : "ADD"}
                     </button>
                   </div>
 
                   <div className="relative">
                     {selectedAddress ? (
-                      <div className="bg-gradient-to-br from-gray-50 to-white p-5 rounded-xl border border-gray-200 text-sm text-gray-600 leading-relaxed relative shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <div className="absolute top-3 right-3 flex gap-2">
+                      <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 relative group transition-all hover:border-gray-200">
+                        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => handleEditClick(selectedAddress)}
-                            className="text-xs font-medium text-gray-500 hover:text-primary bg-white border border-gray-200 px-2.5 py-1 rounded shadow-sm hover:shadow transition-all"
-                            title="Edit Delivery Address"
+                            className="p-1.5 text-gray-400 hover:text-primary bg-white rounded-md shadow-sm border border-gray-100"
+                            title="Edit"
                           >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleDeleteAddress(selectedAddress._id)
-                            }
-                            className="text-xs font-medium text-gray-500 hover:text-red-500 bg-white border border-gray-200 px-2.5 py-1 rounded shadow-sm hover:shadow transition-all"
-                            title="Delete Delivery Address"
-                          >
-                            Delete
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                              <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.918 6.92a4 4 0 01-1.342.825L5.433 13.917zM16.096 3.659a.625.625 0 00-.882-.882L14 4l1.768 1.768.328-.328.882.882a.625.625 0 00.882-.882l-.328-.328 1.768-1.768L16.096 3.659zM4.75 16.25c.69 0 1.25-.56 1.25-1.25s-.56-1.25-1.25-1.25-1.25.56-1.25 1.25.56 1.25 1.25 1.25z" />
+                            </svg>
                           </button>
                         </div>
-                        <p className="font-bold text-gray-900 mb-1.5 text-base flex items-center gap-2">
-                          <span className="bg-primary/10 text-primary p-1 rounded-full">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              className="w-3 h-3"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </span>
-                          {selectedAddress.firstName} {selectedAddress.lastName}
-                        </p>
-                        <p className="text-gray-500 mb-1">
-                          {selectedAddress.street}, {selectedAddress.city}
-                        </p>
-                        <p className="text-gray-500 mb-3">
-                          {selectedAddress.state}, {selectedAddress.zipCode}
-                        </p>
-                        <p className="mt-2 flex items-center gap-2 text-gray-700 font-medium bg-gray-100/50 w-fit px-2 py-1 rounded border border-gray-100">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            className="w-3.5 h-3.5 text-gray-400"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M2 3.5A1.5 1.5 0 013.5 2h1.148a1.5 1.5 0 011.465 1.175l.716 3.223a1.5 1.5 0 01-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 006.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 011.767-1.052l3.223.716A1.5 1.5 0 0118 15.352V16.5a1.5 1.5 0 01-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 012.43 8.326 13.019 13.019 0 012 5V3.5z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          {selectedAddress.phone}
-                        </p>
+                        <div className="flex items-start gap-3">
+                            <div className="mt-1 p-1.5 bg-white border border-gray-100 rounded-lg text-primary shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                                  <path fillRule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p className="font-bold text-gray-900 text-sm">
+                                  {selectedAddress.firstName} {selectedAddress.lastName}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                                  {selectedAddress.street}, {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.zipCode}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1 font-medium">
+                                  Ph: {selectedAddress.phone}
+                                </p>
+                            </div>
+                        </div>
                       </div>
                     ) : (
-                      <div className="bg-red-50 p-4 rounded-lg border border-red-100 text-sm text-red-500 text-center">
-                        No address selected. Please add or select an address.
-                      </div>
+                      <button 
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="w-full bg-red-50 p-4 rounded-xl border border-red-100 text-sm text-red-500 font-medium flex items-center justify-center gap-2 hover:bg-red-100 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Add Delivery Address
+                      </button>
                     )}
 
                     {showAddress && (
-                      <div className="absolute top-full left-0 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl z-20 max-h-60 overflow-y-auto">
-                        {user &&
-                          addresses?.map((address, index) => (
+                      <div className="absolute top-full left-0 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-30 max-h-60 overflow-y-auto custom-scrollbar animate-in fade-in zoom-in-95 duration-200">
+                        {user && addresses?.length > 0 ? (
+                           addresses.map((address, index) => (
                             <div
                               key={index}
                               onClick={() => {
                                 setSelectedAddress(address);
                                 setShowAddress(false);
                               }}
-                              className="p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0 transition-colors"
+                              className="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors flex items-center gap-3"
                             >
-                              <span className="font-bold block text-gray-800 text-sm mb-1">
-                                {address.firstName} {address.lastName}
-                              </span>
-                              <p className="text-xs text-gray-500 truncate">
-                                {address.street}, {address.city},{" "}
-                                {address.zipCode}
-                              </p>
+                                <div className={`w-2 h-2 rounded-full ${selectedAddress?._id === address._id ? 'bg-primary' : 'bg-gray-200'}`}></div>
+                                <div>
+                                  <span className="font-bold block text-gray-800 text-xs">
+                                    {address.firstName} {address.lastName}
+                                  </span>
+                                  <p className="text-[10px] text-gray-500 truncate max-w-[200px]">
+                                    {address.street}, {address.city}
+                                  </p>
+                                </div>
                             </div>
-                          ))}
+                          ))
+                        ) : (
+                            <div className="p-4 text-center text-xs text-gray-400">No saved addresses found.</div>
+                        )}
                         <div
                           onClick={() => {
                             if (!user) {
                               setShowUserLogin(true);
                               return;
                             }
-                            navigate("/add-address");
+                            setIsAddModalOpen(true);
+                            setShowAddress(false);
                           }}
-                          className="p-3 text-center bg-gray-50 hover:bg-gray-100 text-primary font-medium text-sm cursor-pointer transition-colors sticky bottom-0"
+                          className="p-3 text-center bg-gray-50 hover:bg-gray-100 text-primary font-bold text-xs cursor-pointer transition-colors sticky bottom-0 border-t border-gray-100"
                         >
                           + Add New Address
                         </div>
@@ -594,61 +587,67 @@ const Cart = () => {
                   </div>
                 </div>
 
+                <div className="w-full h-px bg-gray-100"></div>
+
                 {/* Payment Method */}
                 <div>
-                  <p className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
                     Payment Method
                   </p>
                   <div className="relative">
                     <select
                       onChange={(e) => setPaymentOptions(e.target.value)}
-                      className="w-full appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer"
+                      className="w-full appearance-none bg-white border border-gray-200 text-gray-700 font-medium py-3 px-4 pr-10 rounded-xl leading-tight focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 cursor-pointer text-sm shadow-sm transition-all hover:border-gray-300"
                     >
-                      <option value="COD">Cash On Delivery</option>
+                      <option value="COD">Cash On Delivery (COD)</option>
                       <option value="Online">Online Payment (Stripe)</option>
                     </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                      <svg
-                        className="fill-current h-4 w-4"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                         <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
                       </svg>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="border-t border-gray-200 my-6"></div>
+                <div className="w-full h-px border-t border-dashed border-gray-200"></div>
 
-              <div className="space-y-3">
-                <div className="flex justify-between text-gray-600">
-                  <span>Price</span>
-                  <span>
-                    {currency}
-                    {getCartAmount()}
-                  </span>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-gray-600 text-sm">
+                    <span>Subtotal</span>
+                    <span className="font-medium text-gray-900">
+                      {currency} {getCartAmount().toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-gray-600 text-sm">
+                    <span className="flex items-center gap-1">
+                        Shipping Fee
+                        <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-bold">Free</span>
+                    </span>
+                    <span className="text-green-600 font-bold">0.00</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600 text-sm">
+                    <span className="flex items-center gap-1">
+                        Tax Estimate 
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-gray-400">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a.75.75 0 11-1.061-1.061 3 3 0 112.871 5.026v.345a.75.75 0 01-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 108.94 6.94zM10 15a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                        </svg>
+                    </span>
+                    <span className="font-medium text-gray-900">
+                      {currency} {((getCartAmount() * 2) / 100).toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="bg-primary/5 p-4 rounded-xl flex justify-between items-center mt-4 border border-primary/10">
+                    <div>
+                        <span className="block text-xs text-primary font-bold uppercase tracking-wide">Total Amount</span>
+                        <span className="text-xs text-gray-500">Includes all taxes</span>
+                    </div>
+                    <span className="text-2xl font-bold text-primary">
+                      {currency} {(getCartAmount() + (getCartAmount() * 2) / 100).toFixed(2)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Shipping Fee</span>
-                  <span className="text-green-600 font-medium">Free</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Tax (2%)</span>
-                  <span>
-                    {currency}
-                    {(getCartAmount() * 2) / 100}
-                  </span>
-                </div>
-                <div className="flex justify-between text-xl font-bold text-gray-900 pt-4 border-t border-gray-100 mt-4">
-                  <span>Total</span>
-                  <span className="text-primary">
-                    {currency}
-                    {getCartAmount() + (getCartAmount() * 2) / 100}
-                  </span>
-                </div>
-              </div>
 
               {cartArray.length === 0 ? (
                 <button
@@ -680,6 +679,14 @@ const Cart = () => {
           </div>
         </div>
       </div>
+      </div>
+
+      {/* Add Address Modal */}
+      <AddAddressModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        onAddressAdded={getUserAddress} 
+      />
 
       {/* Edit Address Modal */}
       {isEditModalOpen && (

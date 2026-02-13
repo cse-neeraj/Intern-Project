@@ -21,7 +21,8 @@ const Navbar = () => {
     cartItems,
     getCartCount,
     axios,
-    backendUrl
+    backendUrl,
+    setToken
   } = useAppContext();
 
   const logout = async () => {
@@ -29,6 +30,9 @@ const Navbar = () => {
       const {data} = await axios.post(backendUrl + '/api/user/logout', {}, { withCredentials: true })
       if(data.success){
         toast.success(data.message)
+        localStorage.removeItem('token')
+        sessionStorage.removeItem('token')
+        setToken(null)
         navigate("/");
         setUser(null);
       }else{
@@ -159,7 +163,7 @@ const Navbar = () => {
           <img className="h-8 md:h-10 w-auto object-contain hover:scale-105 transition-transform duration-300" src={assets.logo} alt="logo" />
         </NavLink>
 
-        <div className="hidden sm:flex items-center gap-8">
+        <div className="hidden sm:flex items-center gap-6">
           <NavLink
             to="/"
             end
@@ -345,12 +349,7 @@ const Navbar = () => {
               </ul>
               </div>
             </div>
-            <button
-              onClick={logout}
-              className="hidden lg:block cursor-pointer px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full font-medium transition-all text-sm"
-            >
-              Logout
-            </button>
+
             </div>
           )}
         </div>

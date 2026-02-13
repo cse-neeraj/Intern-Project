@@ -117,3 +117,104 @@ export const resetPasswordEmail = (resetUrl, name) => {
 </html>
   `;
 };
+
+export const googleLoginEmail = (name) => {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Login to Your BuyFresh Account</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      color: #374151;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .header {
+      background-color: #4285F4;
+      padding: 32px 20px;
+      text-align: center;
+    }
+    .header h1 {
+      color: #ffffff;
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .content {
+      padding: 40px 32px;
+    }
+    .greeting {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+    .message {
+      margin-bottom: 24px;
+      color: #4b5563;
+    }
+    .alert-box {
+      background-color: #eff6ff;
+      border-left: 4px solid #4285F4;
+      padding: 16px;
+      margin: 24px 0;
+      border-radius: 4px;
+    }
+    .footer {
+      background-color: #f9fafb;
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #9ca3af;
+      border-top: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>New Google Login Detected</h1>
+    </div>
+    <div class="content">
+      <p class="greeting">Hello ${name},</p>
+      <p class="message">We noticed a new login to your BuyFresh account using Google.</p>
+      
+      <div class="alert-box">
+        <p style="margin: 0; font-weight: 500; color: #1e3a8a;">
+          Time: ${new Date().toLocaleString()}<br>
+          Method: Google Authentication
+        </p>
+      </div>
+      
+      <p class="message">If this was you, you can safely ignore this email.</p>
+      <p class="message" style="color: #dc2626; font-weight: 600;">
+        If you did not authorize this login, please contact support immediately.
+      </p>
+      
+      <p class="message" style="margin-top: 32px; border-top: 1px solid #e5e7eb; padding-top: 24px;">
+        Best regards,<br>
+        <strong>The BuyFresh Team</strong>
+      </p>
+    </div>
+    <div class="footer">
+      <p>&copy; ${new Date().getFullYear()} BuyFresh. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+};
