@@ -44,26 +44,25 @@ passport.use(new GoogleStrategy({
       }
 
       // Send login notification email
-      try {
-        const transporter = nodemailer.createTransport({
-          host: process.env.SMTP_HOST,
-          port: process.env.SMTP_PORT,
-          service: process.env.SMTP_HOST ? undefined : 'gmail',
-          auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
-          },
-        });
+      // Send login notification email (Fire and forget - don't await)
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        service: process.env.SMTP_HOST ? undefined : 'gmail',
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
 
-        await transporter.sendMail({
-          from: process.env.SMTP_USER,
-          to: email,
-          subject: 'Login Notification',
-          text: `Hello ${user.name},\n\nYou have successfully logged in with Google.\n\nIf this wasn't you, please contact support immediately.\n\nBest regards,\nBuyFresh Team`,
-        });
-      } catch (emailError) {
+      transporter.sendMail({
+        from: process.env.SMTP_USER,
+        to: email,
+        subject: 'Login Notification',
+        text: `Hello ${user.name},\n\nYou have successfully logged in with Google.\n\nIf this wasn't you, please contact support immediately.\n\nBest regards,\nBuyFresh Team`,
+      }).catch(emailError => {
         logger.error(`Failed to send login notification email: ${emailError.message}`);
-      }
+      });
 
       return done(null, user);
     } catch (error) {
