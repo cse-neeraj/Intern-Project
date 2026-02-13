@@ -25,6 +25,7 @@ import newsletterRouter from "./routes/newsletterRoute.js";
 import notificationRouter from "./routes/notificationRoute.js";
 import { stripeWebhooks } from "./controllers/orderController.js";
 import notifyRouter from "./routes/notifyRoute.js";   
+import emailRouter from "./routes/emailRoute.js";
 import Banner from "./models/Banner.js";
 import "./configs/passport.js";
 import googleAuthRouter from "./routes/googleAuthRoute.js";
@@ -125,6 +126,7 @@ app.use("/api/contact", contactRouter);
 app.use("/api/newsletter", newsletterRouter);
 app.use("/api/notification", notificationRouter);
 app.use("/api/notify", notifyRouter);
+app.use("/api/email", emailRouter);
 
 app.get("/api/home-banners", async (req, res) => {
   try {
@@ -142,4 +144,11 @@ app.get("/", (req, res) => {
 
 server.listen(port, () => {
   logger.info(`Server is running on http://localhost:${port}`);
+}).on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    logger.error(`Port ${port} is already in use. Please free the port or use a different one.`);
+    process.exit(1);
+  } else {
+    logger.error(err);
+  }
 });

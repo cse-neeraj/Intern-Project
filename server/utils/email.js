@@ -1,4 +1,4 @@
-export const sendEmail = async ({ to, subject, html, text }) => {
+export const sendEmail = async ({ to, subject, html, text, attachments }) => {
     try {
         if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
             console.warn("Email sending skipped: EMAIL_USER or EMAIL_PASS not configured.");
@@ -23,7 +23,8 @@ export const sendEmail = async ({ to, subject, html, text }) => {
             to,
             subject,
             html,
-            text
+            text,
+            attachments
         };
 
         await transporter.sendMail(mailOptions);

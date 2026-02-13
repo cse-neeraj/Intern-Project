@@ -1,4 +1,3 @@
-import { sendEmail } from "./utils/email.js";
 import { sendEmail } from "../utils/email.js";
 import "dotenv/config";
 
