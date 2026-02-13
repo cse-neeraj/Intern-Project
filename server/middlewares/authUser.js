@@ -12,6 +12,11 @@ const authUser = async (req, res, next) => {
     if (!token && req.headers.authorization?.startsWith("Bearer ")) {
       token = req.headers.authorization.split(" ")[1];
     }
+    
+    // Fallback: Check 'token' header
+    if (!token && req.headers.token) {
+      token = req.headers.token;
+    }
 
     if (!token) {
       return res.json({
