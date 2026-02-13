@@ -21,6 +21,10 @@ googleAuthRouter.get('/google/callback', (req, res, next) => {
       logger.error("Google Auth Failed: No user returned");
       return res.redirect(`${frontendUrl}/login`);
     }
+    if (!process.env.JWT_SECRET) {
+      logger.error("Google Auth Error: JWT_SECRET is not defined");
+      return res.redirect(`${frontendUrl}/login`);
+    }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.cookie('token', token, {
       httpOnly: true,

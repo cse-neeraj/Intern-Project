@@ -35,6 +35,10 @@ export const register = async (req, res) => {
 
     const user = await User.create(userData);
 
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined");
+    }
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
@@ -85,6 +89,10 @@ export const login = async (req, res) => {
 
     if (!isMatch) {
       return res.json({ success: false, message: "Invalid email or password" });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined");
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -297,6 +305,10 @@ export const loginWithOtp = async (req, res) => {
     user.otp = null;
     user.otpExpire = null;
     await user.save();
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined");
+    }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",

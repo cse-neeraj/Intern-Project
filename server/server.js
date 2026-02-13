@@ -70,6 +70,10 @@ io.on("connection", (socket) => {
 
 const port = process.env.PORT || 4000;
 
+if (!process.env.JWT_SECRET) {
+  logger.warn("⚠️ JWT_SECRET is not defined in .env file. Authentication will fail.");
+}
+
 await connectDB();
 await connectCloudinary();
 
