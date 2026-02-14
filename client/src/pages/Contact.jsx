@@ -107,24 +107,24 @@ const Contact = () => {
                     <p className="text-lg md:text-xl font-medium drop-shadow-md opacity-90">
                       {banner.description}
                     </p>
-                    {banner.buttonText && (
-                      <div className="mt-4 md:mt-6">
-                        <a
-                          href="#contact-form"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" });
-                          }}
-                          className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dull text-white font-bold px-6 py-2.5 md:px-8 md:py-3 rounded-full shadow-lg transition-all transform hover:-translate-y-0.5 text-sm md:text-base"
-                        >
-                          {banner.buttonText}
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                          </svg>
-                        </a>
-                      </div>
-                    )}
                   </div>
+                  {banner.buttonText && (
+                    <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-full text-center">
+                      <a
+                        href="#contact-form"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" });
+                        }}
+                        className="inline-flex items-center gap-2 bg-primary hover:bg-white hover:text-primary text-white font-bold px-8 py-3 rounded-full shadow-lg transition-all transform hover:-translate-y-1 text-base uppercase tracking-wider border-2 border-primary hover:border-white"
+                      >
+                        {banner.buttonText}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 animate-bounce">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -232,7 +232,7 @@ const Contact = () => {
                 <button 
                   type="submit" 
                   disabled={loading} 
-                  className="w-full bg-primary text-white py-4 px-8 rounded-xl font-bold shadow-lg shadow-primary/30 hover:bg-primary-dull hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98] flex items-center justify-center gap-2"
+                  className="w-full bg-primary text-white py-4 px-8 rounded-full font-semibold hover:opacity-90 transition-opacity duration-300 uppercase tracking-wide disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
                 >
                   {loading ? (
                     <>

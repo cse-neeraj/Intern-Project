@@ -31,8 +31,11 @@ import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
 import SellerLogin from "./pages/seller/SellerLogin";
 
+import VerifyOtp from "./pages/VerifyOtp";
+
 const App = () => {
   const { showUserLogin, isSeller, backendUrl, axios, setIsSeller, searchQuery, navigate, products, user, setToken, setUser } = useAppContext();
+
   const location = useLocation();
   const isSellerPath = location.pathname.includes("seller");
   const [loading, setLoading] = useState(true);
@@ -54,26 +57,19 @@ const App = () => {
     };
     checkSellerAuth();
 
-    const token = localStorage.getItem('token');
-    if (token) {
-      setToken(token);
-      const fetchUser = async () => {
-        try {
-          const { data } = await axios.post(backendUrl + '/api/user/is-auth', {}, { headers: { Authorization: `Bearer ${token}` } });
-          if (data.success) {
-            setUser(data.user);
-          } else {
-            localStorage.removeItem('token');
-            setToken('');
-          }
-        } catch (error) {
-          console.log(error);
-          localStorage.removeItem('token');
-          setToken('');
+    const fetchUser = async () => {
+      try {
+        const { data } = await axios.post(backendUrl + '/api/user/is-auth', {}, { withCredentials: true });
+        if (data.success) {
+          setUser(data.user);
+        } else {
+          // If not auth, we don't need to do anything, user is just null
         }
-      };
-      fetchUser();
-    }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUser();
   }, []);
 
   useEffect(() => {
@@ -175,6 +171,7 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
 
           <Route path="/contact" element={<Contact />} />
+          <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/seller-login" element={isSeller ? <Navigate to="/seller" /> : user ? <Navigate to="/" /> : <SellerLogin />} />
           <Route
             path="/seller"

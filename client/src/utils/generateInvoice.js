@@ -25,12 +25,32 @@ export const generateInvoice = async (
   const lightGray = [229, 231, 235]; // Gray-200
 
   // Helper to load image
+  // Helper to load image and convert to PNG data URL (handling SVGs)
   const loadImage = (src) => {
     return new Promise((resolve) => {
       const img = new Image();
+      img.crossOrigin = "Anonymous"; // Allow loading cross-origin images
       img.src = src;
-      img.onload = () => resolve(img);
-      img.onerror = () => resolve(null);
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const scale = 5; // Upscale for better resolution
+        canvas.width = (img.width || 132) * scale;
+        canvas.height = (img.height || 30) * scale;
+        const ctx = canvas.getContext("2d");
+        
+        // Improve image quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // Draw scaled up
+        const dataURL = canvas.toDataURL("image/png", 1.0);
+        console.log("Logo Loaded:", { width: img.width, height: img.height, dataURLLength: dataURL.length, src: src });
+        resolve(dataURL);
+      };
+      img.onerror = (err) => {
+        console.error("Logo Load Error for src:", src, err);
+        resolve(null);
+      };
     });
   };
 
@@ -38,7 +58,10 @@ export const generateInvoice = async (
   try {
     const logo = await loadImage(assets.logo);
     if (logo) {
-      doc.addImage(logo, "PNG", margin, 15, 25, 25);
+      // Logo native aspect ratio is 132:30 (approx 4.4:1)
+      // Previous 25x25 was checking distortion. 
+      // Using width 44 and height 10 preserves ratio.
+      doc.addImage(logo, "PNG", margin, 15, 44, 10);
     }
   } catch (error) {
     console.warn("Logo could not be loaded", error);
@@ -48,14 +71,14 @@ export const generateInvoice = async (
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
   doc.setTextColor(...primaryColor);
-  doc.text("BuyFresh", margin, 50);
+  doc.text("GreenCart", margin, 50);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(...secondaryColor);
 
   const storeAddress = store?.address || "123 Grocery St, Fresh City, FC 12345";
-  const storeEmail = store?.email || "support@buyfresh.com";
+  const storeEmail = store?.email || "support@greencart.com";
   const storePhone = store?.phone || "+1 234 567 890";
 
   doc.text(storeAddress, margin, 56);
@@ -141,7 +164,7 @@ export const generateInvoice = async (
       fillColor: primaryColor, 
       textColor: 255, 
       fontStyle: "bold",
-      halign: "left",
+      halign: "left", // Keep headers left aligned for text
       cellPadding: 4 
     },
     styles: { 
@@ -155,36 +178,52 @@ export const generateInvoice = async (
       0: { cellWidth: 15, halign: "center" },
       1: { cellWidth: "auto", halign: "left" },
       2: { cellWidth: 20, halign: "center" },
-      3: { cellWidth: 30, halign: "right" },
-      4: { cellWidth: 30, halign: "right" },
+      3: { cellWidth: 30, halign: "right" }, // Align numbers to right
+      4: { cellWidth: 30, halign: "right" }, // Align numbers to right
     },
     margin: { left: margin, right: margin },
   });
 
-  // Totals
+  // Totals Section
   const finalY = doc.lastAutoTable.finalY + 10;
   const totalAmount = order.amount || 0;
+  const subtotal = totalAmount; // Assuming no separate tax calculation for now, but good to show structure
 
-  // Draw line above total
+  // Subtotal
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.setTextColor(...secondaryColor);
+  doc.text("Subtotal", rightMargin - 60, finalY, { align: "left" });
+  doc.text(`${currencySymbol} ${subtotal.toFixed(2)}`, rightMargin, finalY, { align: "right" });
+
+  // Tax (0% for now, can be dynamic later)
+  doc.text("Tax (0%)", rightMargin - 60, finalY + 6, { align: "left" });
+  doc.text(`${currencySymbol} 0.00`, rightMargin, finalY + 6, { align: "right" });
+
+  // Divider Line
   doc.setDrawColor(...lightGray);
-  doc.line(rightMargin - 60, finalY, rightMargin, finalY);
+  doc.line(rightMargin - 60, finalY + 10, rightMargin, finalY + 10);
 
+  // Grand Total
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
-  doc.setTextColor(...darkGray);
-  doc.text("Grand Total", rightMargin - 60, finalY + 8, { align: "left" });
-  doc.text(`${currencySymbol} ${totalAmount.toFixed(2)}`, rightMargin, finalY + 8, { align: "right" });
+  doc.setTextColor(...primaryColor); // Use brand color for total
+  doc.text("Grand Total", rightMargin - 60, finalY + 18, { align: "left" });
+  doc.text(`${currencySymbol} ${totalAmount.toFixed(2)}`, rightMargin, finalY + 18, { align: "right" });
 
   // Footer
   const footerY = pageHeight - 20;
   doc.setDrawColor(...lightGray);
-  doc.line(margin, footerY - 5, rightMargin, footerY - 5);
-
-  doc.setFont("helvetica", "italic");
+  doc.line(margin, footerY - 10, rightMargin, footerY - 10);
+  
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(...secondaryColor);
-  doc.text("Thank you for shopping with BuyFresh!", pageWidth / 2, footerY, { align: "center" });
-  doc.text("For support, email us at support@buyfresh.com", pageWidth / 2, footerY + 5, { align: "center" });
+  
+  doc.text("Thank you for choosing GreenCart!", pageWidth / 2, footerY, { align: "center" });
+  doc.text("For any queries, please verify your invoice or contact support@greencart.com", pageWidth / 2, footerY + 5, { align: "center" });
+
+
 
   // Output
   if (action === "print") {

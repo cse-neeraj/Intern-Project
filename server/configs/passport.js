@@ -8,15 +8,7 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   logger.error("❌ Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in .env file");
 }
 
-const backendUrl = process.env.BACKEND_URL ? process.env.BACKEND_URL.trim() : null;
-
-if (process.env.NODE_ENV === 'production' && !backendUrl) {
-  logger.warn("⚠️  WARNING: NODE_ENV is 'production' but BACKEND_URL is not set. Google Login will likely fail with redirect_uri_mismatch.");
-}
-
-const callbackURL = backendUrl 
-  ? `${backendUrl.replace(/\/$/, "")}/api/user/google/callback` 
-  : "/api/user/google/callback";
+const callbackURL = "http://localhost:4000/api/user/google/callback";
 
 logger.info(`Google Callback URL: ${callbackURL}`);
 

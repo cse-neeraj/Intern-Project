@@ -157,21 +157,21 @@ export const footerLinks = [
   {
     title: "Quick Links",
     links: [
-      { text: "Home", url: "#" },
-      { text: "Best Sellers", url: "#" },
-      { text: "Offers & Deals", url: "#" },
-      { text: "Contact Us", url: "#" },
-      { text: "FAQs", url: "#" },
+      { text: "Home", url: "/" },
+      { text: "Best Sellers", url: "/products" },
+      { text: "Offers & Deals", url: "/products" },
+      { text: "Contact Us", url: "/contact" },
+      { text: "FAQs", url: "/about" },
     ],
   },
   {
     title: "Need help?",
     links: [
-      { text: "Delivery Information", url: "#" },
-      { text: "Return & Refund Policy", url: "#" },
-      { text: "Payment Methods", url: "#" },
-      { text: "Track your Order", url: "#" },
-      { text: "Contact Us", url: "#" },
+      { text: "Delivery Information", url: "/delivery" },
+      { text: "Return & Refund Policy", url: "/policy" },
+      { text: "Payment Methods", url: "/payment" },
+      { text: "Track your Order", url: "/my-orders" },
+      { text: "Contact Us", url: "/contact" },
     ],
   },
   {

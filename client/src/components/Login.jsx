@@ -49,8 +49,8 @@ const Login = () => {
         if (response.success) {
           setToken(response.token);
           setUser(response.user);
-          if (rememberMe) localStorage.setItem("token", response.token);
-          else sessionStorage.setItem("token", response.token);
+          setToken(response.token);
+          setUser(response.user);
           setShowUserLogin(false);
           toast.success(response.message);
         } else {
@@ -65,8 +65,8 @@ const Login = () => {
         if (response.success) {
           setToken(response.token);
           setUser(response.user);
-          if (rememberMe) localStorage.setItem("token", response.token);
-          else sessionStorage.setItem("token", response.token);
+          setToken(response.token);
+          setUser(response.user);
           setShowUserLogin(false);
           toast.success(response.message);
         } else {

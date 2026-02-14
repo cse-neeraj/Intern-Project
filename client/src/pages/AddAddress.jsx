@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import InteractiveMap from '../components/InteractiveMap';
 
 const AddAddress = () => {
-  const { backendUrl, axios, navigate, token } = useAppContext();
+  const { backendUrl, axios, navigate, user, setShowUserLogin } = useAppContext();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -72,8 +72,13 @@ const AddAddress = () => {
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+    if (!user) {
+      toast.error("Please login to add address");
+      setShowUserLogin(true);
+      return;
+    }
     try {
-      const { data } = await axios.post(backendUrl + '/api/address/add', formData, { headers: { token }, withCredentials: true });
+      const { data } = await axios.post(backendUrl + '/api/address/add', formData, { withCredentials: true });
       if (data.success) {
         toast.success(data.message);
         navigate('/cart');

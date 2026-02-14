@@ -19,7 +19,7 @@ export const AppContextProvider = (props) => {
   const [banners, setBanners] = useState([]);
   const [loadingBanners, setLoadingBanners] = useState(true);
   const [showUserLogin, setShowUserLogin] = useState(false);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(localStorage.getItem('token') || sessionStorage.getItem('token'));
   const [isSeller, setIsSeller] = useState(false);
 
   const backendUrl = import.meta.env.VITE_API_URL;

@@ -30,8 +30,6 @@ const Navbar = () => {
       const {data} = await axios.post(backendUrl + '/api/user/logout', {}, { withCredentials: true })
       if(data.success){
         toast.success(data.message)
-        localStorage.removeItem('token')
-        sessionStorage.removeItem('token')
         setToken(null)
         navigate("/");
         setUser(null);

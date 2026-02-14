@@ -18,8 +18,16 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
             }
         });
 
+        // Verify connection configuration
+        try {
+            await transporter.verify();
+            console.log("✅ Email Server is ready to take our messages");
+        } catch (error) {
+            console.error("❌ Email Server Connection Error:", error);
+        }
+
         const mailOptions = {
-            from: `"BuyFresh" <${process.env.EMAIL_USER}>`,
+            from: `"Greencart" <${process.env.EMAIL_USER}>`,
             to,
             subject,
             html,

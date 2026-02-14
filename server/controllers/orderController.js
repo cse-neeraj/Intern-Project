@@ -3,6 +3,8 @@ import Product from "../models/Product.js";
 import Stripe from "stripe";
 import User from "../models/User.js";
 import { createNotification } from "./notificationController.js";
+import { sendEmail } from "../utils/email.js";
+import { orderConfirmationEmail, orderCancellationEmail, orderDeliveredEmail } from "../utils/emailTemplates.js";
 
 // Place Order COD :/api/order/cod
 export const placeOrderCOD = async (req, res) => {
@@ -32,13 +34,29 @@ export const placeOrderCOD = async (req, res) => {
     //Added Tax charge(2%)
     amount += Math.floor(amount * 0.02);
 
-    await Order.create({
+    const newOrder = await Order.create({
       userId,
       items: orderItems,
       amount,
       address,
       paymentType: "COD",
     });
+
+    // Send confirmation email
+    const user = await User.findById(userId);
+    if (user) {
+      const emailHtml = orderConfirmationEmail(
+        user.name, 
+        newOrder._id.toString(), 
+        orderItems, 
+        amount
+      );
+      await sendEmail({
+        to: user.email,
+        subject: "Order Confirmation - GreenCart",
+        html: emailHtml
+      });
+    }
 
     return res.json({ success: true, message: "Order Placed Successfully" });
   } catch (error) {
@@ -159,9 +177,25 @@ export const stripeWebhooks = async (req, res) => {
         if (session.data.length > 0) {
           const { orderId, userId } = session.data[0].metadata;
           // mark Payment as paid
-          await Order.findByIdAndUpdate(orderId, { isPaid: true });
+          const updatedOrder = await Order.findByIdAndUpdate(orderId, { isPaid: true });
           // Clear user cart
           await User.findByIdAndUpdate(userId, { cartItems: {} });
+
+          // Send confirmation email
+          const user = await User.findById(userId);
+          if (user && updatedOrder) {
+            const emailHtml = orderConfirmationEmail(
+              user.name, 
+              orderId, 
+              updatedOrder.items, 
+              updatedOrder.amount
+            );
+            await sendEmail({
+              to: user.email,
+              subject: "Order Confirmation - GreenCart",
+              html: emailHtml
+            });
+          }
         }
         break;
       }
@@ -267,7 +301,27 @@ export const updateStatus = async (req, res) => {
     if (order) {
       let message = `Your order #${orderId.slice(-6)} status has been updated to ${status}`;
       if (status === 'Cancelled') {
+        const user = await User.findById(order.userId);
+        if (user) {
+          const emailHtml = orderCancellationEmail(user.name, orderId, true);
+          await sendEmail({
+             to: user.email,
+             subject: "Order Cancelled - GreenCart",
+             html: emailHtml
+          });
+        }
         message = `Your order #${orderId.slice(-6)} has been  by the seller.`;
+      } else if (status === 'Delivered') {
+        const user = await User.findById(order.userId);
+        if (user) {
+          const emailHtml = orderDeliveredEmail(user.name, orderId);
+          await sendEmail({
+             to: user.email,
+             subject: "Order Delivered - GreenCart",
+             html: emailHtml
+          });
+        }
+        message = `Your order #${orderId.slice(-6)} has been delivered successfully.`;
       }
 
       const io = req.app.get('io');
@@ -298,6 +352,18 @@ export const cancelOrder = async (req, res) => {
 
     if (order.status === "Order Placed") {
       await Order.findByIdAndUpdate(orderId, { status: "Cancelled" });
+      
+      // Send cancellation email
+      const user = await User.findById(userId);
+      if (user) {
+        const emailHtml = orderCancellationEmail(user.name, orderId, false);
+        await sendEmail({
+          to: user.email,
+          subject: "Order Cancelled - GreenCart",
+          html: emailHtml
+        });
+      }
+      
       res.json({ success: true, message: "Order Cancelled" });
     } else {
       res.json({ success: false, message: "Order cannot be " });

@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { sendEmail } from "../utils/email.js";
+import { googleLoginEmail } from "../utils/emailTemplates.js";
 
 //register user
 
@@ -305,6 +306,22 @@ export const loginWithOtp = async (req, res) => {
     user.otp = null;
     user.otpExpire = null;
     await user.save();
+
+    // Send Login Notification Email
+    try {
+      if (user.email) {
+        console.log(`Sending Login Notification to: ${user.email}`);
+        // Consider this a Google/OTP login
+        const emailContent = googleLoginEmail(user.name || 'User'); 
+        await sendEmail({
+          to: user.email,
+          subject: 'Login Successful - Greencart',
+          html: emailContent
+        });
+      }
+    } catch (emailError) {
+      console.error(`Failed to send login notification email: ${emailError.message}`);
+    }
 
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET is not defined");
