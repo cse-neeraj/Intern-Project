@@ -26,8 +26,8 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
             await transporter.verify();
             console.log("✅ Email Server is ready to take our messages");
         } catch (error) {
-            console.warn("⚠️ Email Server Connection Failed (Dev Mode):", error.message);
-            return false;
+            console.error("❌ Email Server Connection Failed:", error.message);
+            throw new Error(`Connection Failed: ${error.message}`);
         }
 
         const mailOptions = {

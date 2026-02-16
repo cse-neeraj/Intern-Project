@@ -46,10 +46,19 @@ emailRouter.get('/test-send', async (req, res) => {
     if (result) {
       res.send(`<h1>✅ Email Sent!</h1><p>Check inbox for ${email}</p>`);
     } else {
-      res.status(500).send('<h1>❌ Failed</h1><p>Check server logs.</p>');
+      // This path is less likely now that we throw on verify, but keeping it just in case
+      res.status(500).send('<h1>❌ Failed</h1><p>Unknown error (Function returned false).</p>');
     }
   } catch (error) {
-    res.status(500).send(`<h1>❌ Error</h1><p>${error.message}</p>`);
+    console.error("Test Send Error:", error);
+    res.status(500).send(`
+      <h1>❌ Error</h1>
+      <p><strong>Message:</strong> ${error.message}</p>
+      <p><strong>Code:</strong> ${error.code || 'N/A'}</p>
+      <p><strong>Response:</strong> ${error.response || 'N/A'}</p>
+      <hr>
+      <p><em>Please show this error to your developer.</em></p>
+    `);
   }
 });
 
