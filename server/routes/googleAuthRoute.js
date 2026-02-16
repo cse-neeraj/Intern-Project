@@ -7,12 +7,13 @@ import { sendEmail } from '../utils/email.js';
 import { googleLoginEmail, verifyOtpEmail } from '../utils/emailTemplates.js';
 
 const googleAuthRouter = express.Router();
-const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, "");
 
 googleAuthRouter.get('/google', passport.authenticate('google', { session: false, scope: ['profile', 'email'] }));
 
 googleAuthRouter.get('/google/callback', (req, res, next) => {
+  const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, "");
   console.log("Google callback hit");
+  console.log("Redirecting to Frontend URL:", frontendUrl);
   console.log(process.env.GOOGLE_CLIENT_ID);
 
   passport.authenticate('google', { session: false }, async (err, user, info) => {
