@@ -16,7 +16,7 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
             debug: true, // Enable verbose logging for debugging
             logger: true, // Log to console
             auth: {
-                user: process.env.EMAIL_USER,
+                user: process.env.EMAIL_USER?.trim(),
                 pass: process.env.EMAIL_PASS?.replace(/\s+/g, '')
             },
             connectionTimeout: 20000, // Increase to 20s
