@@ -9,16 +9,18 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
 
         const transportConfig = {
             host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-            port: parseInt(process.env.EMAIL_PORT || '587'),
-            secure: process.env.EMAIL_SECURE === 'true',
-            family: 4, // Force IPv4 to prevent Gmail IPv6 timeouts on cloud (Critical Fix)
-            dnsCache: true, // Cache DNS lookups for performance
+            port: parseInt(process.env.EMAIL_PORT || '465'), // Try Port 465 (SSL) instead of 587
+            secure: process.env.EMAIL_SECURE !== 'false', // Default to true for 465
+            family: 4, 
+            dnsCache: true,
+            debug: true, // Enable verbose logging for debugging
+            logger: true, // Log to console
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS?.replace(/\s+/g, '')
             },
-            connectionTimeout: 10000, 
-            greetingTimeout: 10000
+            connectionTimeout: 20000, // Increase to 20s
+            greetingTimeout: 20000
         };
 
         // Only use 'service' if it's explicitly set to something other than gmail
