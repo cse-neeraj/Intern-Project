@@ -1,3 +1,4 @@
+import "./configs/envLoader.js";
 import express from "express";
 import cors from "cors";
 import http from "http";
@@ -7,7 +8,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import mongoose, { connect } from "mongoose";
 import connectDB from "./configs/db.js";
-import "dotenv/config";
+// dotenv loaded via envLoader
 import userRouter from "./routes/userRoute.js";
 import sellerRouter from "./routes/sellerRoute.js";
 import path from "path";
