@@ -9,18 +9,22 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
 
         const transportConfig = {
             host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-            port: parseInt(process.env.EMAIL_PORT || '465'), // Try Port 465 (SSL) instead of 587
-            secure: process.env.EMAIL_SECURE !== 'false', // Default to true for 465
-            family: 4, 
-            dnsCache: true,
-            debug: true, // Enable verbose logging for debugging
-            logger: true, // Log to console
+            port: parseInt(process.env.EMAIL_PORT || '587'),
+            secure: process.env.EMAIL_SECURE === 'true', // Should be false for 587
+            // family: 4,  <-- REMOVED: Allow IPv6. Maybe IPv4 is blocked/slow.
+            dnsCache: false, // Disable cache to ensure fresh lookup
+            debug: true,
+            logger: true,
+            tls: {
+                rejectUnauthorized: false, // Permissive for debugging
+                ciphers: 'SSLv3' // Compatibility fallback
+            },
             auth: {
                 user: process.env.EMAIL_USER?.trim(),
                 pass: process.env.EMAIL_PASS?.replace(/\s+/g, '')
             },
-            connectionTimeout: 20000, // Increase to 20s
-            greetingTimeout: 20000
+            connectionTimeout: 30000, // 30s
+            greetingTimeout: 30000
         };
 
         if (process.env.EMAIL_SERVICE && process.env.EMAIL_SERVICE.toLowerCase() !== 'gmail') {
