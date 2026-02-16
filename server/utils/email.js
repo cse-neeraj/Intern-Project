@@ -23,11 +23,18 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
             greetingTimeout: 20000
         };
 
-        // Only use 'service' if it's explicitly set to something other than gmail
-        // (using 'service: gmail' forces port 465, which we want to avoid if 587 is requested)
         if (process.env.EMAIL_SERVICE && process.env.EMAIL_SERVICE.toLowerCase() !== 'gmail') {
             transportConfig.service = process.env.EMAIL_SERVICE;
         }
+
+        console.log("📧 Email Config:", {
+            host: transportConfig.host,
+            port: transportConfig.port,
+            secure: transportConfig.secure,
+            family: transportConfig.family,
+            user: transportConfig.auth.user ? '***' + transportConfig.auth.user.slice(-4) : 'MISSING',
+            pass: transportConfig.auth.pass ? 'PRESENT' : 'MISSING'
+        });
 
         const transporter = nodemailer.createTransport(transportConfig);
 

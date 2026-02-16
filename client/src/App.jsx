@@ -114,6 +114,8 @@ const App = () => {
     );
   }
 
+// ... existing imports
+
   return (
     <div className="text-default min-h-screen text-gray-700 bg-white">
       {showUserLogin ? <Login /> : null}
@@ -197,3 +199,4 @@ const App = () => {
 };
 
 export default App;
+
