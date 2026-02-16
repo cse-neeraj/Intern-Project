@@ -16,8 +16,8 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS?.replace(/\s+/g, '')
             },
-            connectionTimeout: 10000, // 10 seconds timeout
-            greetingTimeout: 10000
+            connectionTimeout: 2000, // 2 seconds timeout (Fail fast!)
+            greetingTimeout: 2000
         });
 
         // Verify connection configuration
@@ -25,7 +25,7 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
             await transporter.verify();
             console.log("✅ Email Server is ready to take our messages");
         } catch (error) {
-            console.error("❌ Email Server Connection Error:", error.message);
+            console.warn("⚠️ Email Server Connection Failed (Dev Mode):", error.message);
             return false;
         }
 

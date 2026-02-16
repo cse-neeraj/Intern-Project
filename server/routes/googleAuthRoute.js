@@ -38,20 +38,12 @@ googleAuthRouter.get('/google/callback', (req, res, next) => {
       // Send OTP Email
       if (user.email) {
         console.log(`Sending Google Login OTP to: ${user.email}`);
-        console.log(`DEV MODE OTP: ${otp}`); // Log OTP for easier testing
-        
-        try {
-          const emailContent = verifyOtpEmail(otp, user.name || 'User');
-          await sendEmail({
-            to: user.email,
-            subject: 'Verify Your Login - Greencart',
-            html: emailContent
-          });
-          console.log("OTP Email sent successfully");
-        } catch (emailErr) {
-          console.error("Failed to send OTP email:", emailErr);
-          // Continue flow even if email fails
-        }
+        const emailContent = verifyOtpEmail(otp, user.name || 'User');
+        await sendEmail({
+          to: user.email,
+          subject: 'Verify Your Login - Greencart',
+          html: emailContent
+        });
       }
 
       // Redirect to frontend OTP verification page
