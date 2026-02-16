@@ -11,6 +11,8 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
             host: process.env.EMAIL_HOST || 'smtp.gmail.com',
             port: parseInt(process.env.EMAIL_PORT || '587'),
             secure: process.env.EMAIL_SECURE === 'true',
+            family: 4, // Force IPv4 to prevent Gmail IPv6 timeouts on cloud (Critical Fix)
+            dnsCache: true, // Cache DNS lookups for performance
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS?.replace(/\s+/g, '')
