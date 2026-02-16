@@ -22,11 +22,11 @@ googleAuthRouter.get('/google/callback', (req, res, next) => {
       console.log(process.env.GOOGLE_CLIENT_ID);
 
       logger.error(`Google Auth Error: ${err.message}`);
-      return res.redirect(`${frontendUrl}/login`);
+      return res.redirect(`${frontendUrl}/?error=auth_error`);
     }
     if (!user) {
       logger.error("Google Auth Failed: No user returned");
-      return res.redirect(`${frontendUrl}/login`);
+      return res.redirect(`${frontendUrl}/?error=no_user`);
     }
 
     try {
@@ -52,7 +52,8 @@ googleAuthRouter.get('/google/callback', (req, res, next) => {
 
     } catch (error) {
       logger.error(`Google Auth OTP Error: ${error.message}`);
-      return res.redirect(`${frontendUrl}/login?error=auth_failed`);
+      // Redirect to Home with error param so helpful toast can be shown
+      return res.redirect(`${frontendUrl}/?error=email_failed`);
     }
   })(req, res, next);
 });

@@ -86,6 +86,17 @@ const App = () => {
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     const token = query.get("token");
+    const error = query.get("error");
+
+    if (error) {
+      if (error === 'email_failed') toast.error("Login Failed: Could not send OTP email.");
+      else if (error === 'auth_error') toast.error("Google Authentication Failed.");
+      else toast.error("Login Failed. Please try again.");
+      
+      // Clean URL
+      window.history.replaceState({}, document.title, "/");
+    }
+
     if (token) {
       setToken(token);
       localStorage.setItem("token", token);
