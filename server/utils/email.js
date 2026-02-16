@@ -23,8 +23,8 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
                 user: process.env.EMAIL_USER?.trim(),
                 pass: process.env.EMAIL_PASS?.replace(/\s+/g, '')
             },
-            connectionTimeout: 30000, // 30s
-            greetingTimeout: 30000
+            connectionTimeout: 10000, // 10s
+            greetingTimeout: 10000
         };
 
         if (process.env.EMAIL_SERVICE && process.env.EMAIL_SERVICE.toLowerCase() !== 'gmail') {
