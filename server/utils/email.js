@@ -27,8 +27,12 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
             greetingTimeout: 10000
         };
 
-        if (process.env.EMAIL_SERVICE && process.env.EMAIL_SERVICE.toLowerCase() !== 'gmail') {
-            transportConfig.service = process.env.EMAIL_SERVICE;
+        if (process.env.EMAIL_SERVICE) {
+            if (process.env.EMAIL_SERVICE.toLowerCase() === 'gmail') {
+                transportConfig.service = 'Gmail'; // Use built-in Gmail preset (Port 465, SSL)
+            } else {
+                transportConfig.service = process.env.EMAIL_SERVICE;
+            }
         }
 
         console.log("📧 Email Config:", {
