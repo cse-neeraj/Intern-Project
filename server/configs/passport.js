@@ -8,7 +8,7 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   logger.error("❌ Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in .env file");
 }
 
-const callbackURL = "http://localhost:4000/api/user/google/callback";
+const callbackURL = `${process.env.BACKEND_URL}/api/user/google/callback`;
 
 logger.info(`Google Callback URL: ${callbackURL}`);
 
