@@ -3,7 +3,9 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { sendEmail } from "../utils/email.js";
+
 import { googleLoginEmail } from "../utils/emailTemplates.js";
+import { v2 as cloudinary } from "cloudinary";
 
 //register user
 
@@ -347,6 +349,36 @@ export const loginWithOtp = async (req, res) => {
       isNewUser: user.name === "New User",
     });
   } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export const uploadProfilePicture = async (req, res) => {
+  try {
+    const userId = req.userId || req.body.userId; // Use userId from req (set by auth middleware) or body
+    const imageFile = req.file;
+
+    if (!imageFile) {
+      return res.json({ success: false, message: "No image file provided" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(imageFile.path, {
+      resource_type: "image",
+    });
+
+    user.profilePicture = result.secure_url;
+    await user.save();
+
+    res.json({ success: true, message: "Profile picture updated", profilePicture: user.profilePicture });
+
+  } catch (error) {
+    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };

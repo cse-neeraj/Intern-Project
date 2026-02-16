@@ -115,12 +115,12 @@ const ProductCard = ({ product, hideCategory }) => {
                 
                 <div className="relative">
               {isSoldOut ? (
-                 <button 
-                    className="px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-bold text-gray-500 uppercase"
-                    onClick={handleNotifyMe}
-                 >
-                    Notify
-                 </button>
+                  <button 
+                     className="px-4 py-1.5 bg-gray-800 text-white rounded-lg text-xs font-bold uppercase hover:bg-gray-900 transition-colors shadow-sm"
+                     onClick={handleNotifyMe}
+                  >
+                     Notify
+                  </button>
               ) : (
                 <>
                 {!cartItems[product._id] ? (

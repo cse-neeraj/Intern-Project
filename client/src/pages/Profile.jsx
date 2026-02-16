@@ -1,12 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import toast from 'react-hot-toast';
+import { assets } from '../assets/assets';
 
 const Profile = () => {
   const { user, setUser, backendUrl, axios } = useAppContext();
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState(false);
+
+  const uploadImage = async (file) => {
+      try {
+          const formData = new FormData();
+          formData.append('image', file);
+          formData.append('userId', user._id);
+
+          const { data } = await axios.post(backendUrl + '/api/user/upload-profile-picture', formData, {headers: {token: await localStorage.getItem('token')}, withCredentials: true});
+          
+          if (data.success) {
+              toast.success(data.message);
+              setUser(prev => ({ ...prev, profilePicture: data.profilePicture }));
+              setImage(false); 
+          } else {
+              toast.error(data.message);
+          }
+      } catch (error) {
+          console.log(error);
+          toast.error(error.message);
+      }
+  }
 
   useEffect(() => {
     if (user) {
@@ -37,6 +60,35 @@ const Profile = () => {
     <div className="min-h-[60vh] flex items-center justify-center pt-20 pb-10 px-4">
       <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 w-full max-w-md">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">My Profile</h2>
+        <div className="flex justify-center mb-6 relative">
+          {image ? (
+            <img
+              src={URL.createObjectURL(image)}
+              alt="Profile"
+              className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
+            />
+          ) : (
+            <img
+              src={user?.profilePicture || assets.profile_icon}
+              alt="Profile"
+              className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
+            />
+          )}
+          <label htmlFor="image" className="absolute bottom-0 right-[35%] cursor-pointer bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-600">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+            </svg>
+          </label>
+          <input
+            type="file"
+            id="image"
+            hidden
+            onChange={(e) => {
+               setImage(e.target.files[0]);
+               uploadImage(e.target.files[0]); 
+            }}
+          />
+        </div>
         <form onSubmit={onSubmitHandler} className="flex flex-col gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>

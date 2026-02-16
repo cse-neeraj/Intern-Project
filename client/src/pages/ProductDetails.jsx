@@ -189,7 +189,7 @@ const ProductDetails = () => {
                      {isSoldOut ? (
                         <button 
                           onClick={handleNotifyMe}
-                          className="w-full py-2 font-bold border border-gray-300 text-gray-500 rounded-lg text-sm uppercase hover:bg-gray-50 transition-colors"
+                          className="w-full py-2 font-bold bg-gray-800 text-white rounded-lg text-sm uppercase hover:bg-gray-900 transition-colors shadow-sm"
                         >
                           Notify
                         </button>
@@ -287,7 +287,7 @@ const ProductDetails = () => {
                      {isSoldOut ? (
                         <button 
                           onClick={handleNotifyMe}
-                          className="w-full py-2.5 font-bold border border-gray-300 text-gray-500 rounded-lg text-sm uppercase hover:bg-gray-50 transition-colors"
+                          className="w-full py-2.5 font-bold bg-gray-800 text-white rounded-lg text-sm uppercase hover:bg-gray-900 transition-colors shadow-md"
                         >
                           Notify
                         </button>

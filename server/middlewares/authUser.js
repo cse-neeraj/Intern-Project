@@ -18,7 +18,11 @@ const authUser = async (req, res, next) => {
       token = req.headers.token;
     }
 
+    console.log("Auth Middleware - Headers:", req.headers);
+    console.log("Auth Middleware - Token:", token);
+
     if (!token) {
+      console.log("Auth Middleware - No token found");
       return res.json({
         success: false,
         message: "Not Authorized Login Again",
@@ -29,6 +33,7 @@ const authUser = async (req, res, next) => {
     if (tokenDecode.id) {
       req.body = req.body || {};
       req.body.userId = tokenDecode.id;
+      req.userId = tokenDecode.id; // Also attach to req directly to avoid body parsing issues
     } else {
       return res.json({
         success: false,

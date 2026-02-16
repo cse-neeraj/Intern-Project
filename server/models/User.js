@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema(
     otp: { type: String, default: null },
     otpExpire: { type: Number, default: null },
     cartItems: { type: Object, default: {} },
+    profilePicture: { type: String, default: "" },
   },
   { minimize: false },
 );

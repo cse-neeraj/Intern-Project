@@ -28,11 +28,34 @@ passport.use(new GoogleStrategy({
       const email = profile.emails[0].value;
       let user = await User.findOne({ email });
 
-      if (!user) {
+      console.log("Google Profile:", JSON.stringify(profile, null, 2));
+
+      if (user) {
+        console.log("Found existing user:", user.email);
+        console.log("Current profilePicture:", user.profilePicture);
+        
+        // Force update for debugging or if meaningful change
+        if (profile.photos && profile.photos.length > 0) {
+           const googlePhoto = profile.photos[0].value;
+           console.log("Google has photo:", googlePhoto);
+           // Only set profile picture if user doesn't have one
+           if (!user.profilePicture) {
+               console.log("Setting user profile picture from Google...");
+               user.profilePicture = googlePhoto;
+               await user.save();
+           } else {
+               console.log("User already has a profile picture. Skipping Google photo sync.");
+           }
+        } else {
+            console.log("No photos in Google profile.");
+        }
+      } else {
+        console.log("Creating new user...");
         user = await User.create({
           name: profile.displayName || "User",
           email: email,
           password: Math.random().toString(36).slice(-8), // Dummy password for OAuth users
+          profilePicture: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : ""
         });
       }
 
