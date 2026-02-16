@@ -11,7 +11,7 @@ const googleAuthRouter = express.Router();
 googleAuthRouter.get('/google', passport.authenticate('google', { session: false, scope: ['profile', 'email'] }));
 
 googleAuthRouter.get('/google/callback', (req, res, next) => {
-  const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, "");
+  const frontendUrl = (process.env.FRONTEND_URL || 'https://buyfresh-client.onrender.com').replace(/\/$/, "");
   console.log("Google callback hit");
   console.log("Redirecting to Frontend URL:", frontendUrl);
   console.log(process.env.GOOGLE_CLIENT_ID);
@@ -40,11 +40,14 @@ googleAuthRouter.get('/google/callback', (req, res, next) => {
       if (user.email) {
         console.log(`Sending Google Login OTP to: ${user.email}`);
         const emailContent = verifyOtpEmail(otp, user.name || 'User');
-        await sendEmail({
+        const emailSent = await sendEmail({
           to: user.email,
           subject: 'Verify Your Login - Greencart',
           html: emailContent
         });
+        if (!emailSent) {
+          throw new Error("Email sending failed (sendEmail returned false)");
+        }
       }
 
       // Redirect to frontend OTP verification page

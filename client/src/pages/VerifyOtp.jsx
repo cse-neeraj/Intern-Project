@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 const VerifyOtp = () => {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showDebug, setShowDebug] = useState(true); // Debug State
   const location = useLocation();
   const navigate = useNavigate();
   const { backendUrl, setToken, setUser, axios } = useAppContext();
@@ -56,27 +55,6 @@ const VerifyOtp = () => {
       setLoading(false);
     }
   };
-
-  // DEBUG OVERLAY: TEMPORARY
-  // If you see this, the page works but might lack data
-  if (true) {
-      return (
-          <div style={{ padding: 20, fontFamily: 'monospace', backgroundColor: '#fff0f0', color: '#000', height: '100vh', zIndex: 9999, position: 'relative' }}>
-              <h1 style={{ color: 'red' }}>Verify OTP Page Debugger</h1>
-              <p><strong>Status:</strong> Component Loaded Successfully</p>
-              <p><strong>Email Param:</strong> {email || "MISSING (Check URL)"}</p>
-              <p><strong>Backend URL:</strong> {backendUrl || "UNDEFINED"}</p>
-              <p><strong>Mode:</strong> {import.meta.env.MODE}</p>
-              <hr />
-              <button 
-                  onClick={() => setShowDebug(false)}
-                  style={{ padding: '10px 20px', background: 'blue', color: 'white', border: 'none', borderRadius: 5, cursor: 'pointer' }}
-              >
-                  Hide Debug & Show Form
-              </button>
-          </div>
-      );
-  }
 
   return (
     <div className="h-screen flex items-center justify-center bg-slate-50 relative overflow-hidden px-4">

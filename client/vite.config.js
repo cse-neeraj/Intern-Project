@@ -7,8 +7,14 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    port: 5174,
     proxy: {
-      "/api": "http://localhost:4000",
+      "/api": {
+        target: "https://buyfresh-server.onrender.com",
+        changeOrigin: true,
+        secure: false,
+        cookieDomainRewrite: "",
+      },
     },
   },
   build: {

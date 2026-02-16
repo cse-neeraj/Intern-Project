@@ -16,6 +16,9 @@ emailRouter.post('/test-email', async (req, res) => {
       subject: 'Test Email - Greencart',
       html: '<h1>It Works!</h1><p>Your email configuration is correct.</p>'
     });
+    
+    // DEBUG: Log the full SMTP response to see accepted/rejected lists
+    console.log("SMTP Debug Info:", JSON.stringify(result, null, 2));
 
     if (result) {
       res.json({ success: true, message: 'Email sent successfully' });

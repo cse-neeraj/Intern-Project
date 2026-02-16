@@ -42,6 +42,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
   "http://localhost:3002",
+  "https://buyfresh-client.onrender.com",
 ];
 if(process.env.FRONTEND_URL){
   allowedOrigins.push(process.env.FRONTEND_URL.replace(/\/$/, ""));
