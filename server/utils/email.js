@@ -16,9 +16,9 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS?.replace(/\s+/g, '')
             },
-            // Use longer timeout in production for reliability, fail fast in dev
-            connectionTimeout: process.env.NODE_ENV === 'production' ? 10000 : 2000, 
-            greetingTimeout: process.env.NODE_ENV === 'production' ? 10000 : 2000
+            // Use 10 seconds timeout for better reliability in all environments
+            connectionTimeout: 10000, 
+            greetingTimeout: 10000
         });
 
         // Verify connection configuration

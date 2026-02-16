@@ -28,6 +28,31 @@ emailRouter.post('/test-email', async (req, res) => {
   }
 });
 
+// GET version for easy browser testing
+emailRouter.get('/test-send', async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) {
+      return res.status(400).send('<h1>Error: Please provide email query param</h1><p>Example: /api/email/test-send?email=you@example.com</p>');
+    }
+
+    console.log(`Attempting to send test email (GET) to: ${email}`);
+    const result = await sendEmail({
+      to: email,
+      subject: 'Test Email (Browser) - Greencart',
+      html: '<h1>It Works!</h1><p>Your email configuration is definitively correct.</p>'
+    });
+
+    if (result) {
+      res.send(`<h1>✅ Email Sent!</h1><p>Check inbox for ${email}</p>`);
+    } else {
+      res.status(500).send('<h1>❌ Failed</h1><p>Check server logs.</p>');
+    }
+  } catch (error) {
+    res.status(500).send(`<h1>❌ Error</h1><p>${error.message}</p>`);
+  }
+});
+
 
 emailRouter.get('/config-check', (req, res) => {
   res.json({
