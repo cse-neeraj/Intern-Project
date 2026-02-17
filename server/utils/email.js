@@ -22,47 +22,33 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
 
         const nodemailer = (await import('nodemailer')).default;
 
-        // Use 'service: gmail' for Gmail as it is more reliable on cloud platforms (handles ports/TLS automatically)
-        const isGmail = !process.env.SMTP_HOST || process.env.SMTP_HOST.includes('gmail');
+        const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+        // Default to 587 as it is more reliable on cloud hosting (Render) than 465
+        const smtpPort = Number(process.env.SMTP_PORT) || 587;
 
-        const transportConfig = isGmail ? {
-            service: 'gmail',
-            auth: {
-                user: emailUser.trim(),
-                pass: emailPass.replace(/\s+/g, '')
-            },
-            debug: true,
-            logger: true
-        } : {
-            host: process.env.SMTP_HOST,
-            port: Number(process.env.SMTP_PORT) || 587,
-            secure: Number(process.env.SMTP_PORT) === 465,
+        const transportConfig = {
+            host: smtpHost,
+            port: smtpPort,
+            secure: smtpPort === 465, // true for 465, false for other ports
             auth: {
                 user: emailUser.trim(),
                 pass: emailPass.replace(/\s+/g, '')
             },
             tls: {
-                rejectUnauthorized: false
+                rejectUnauthorized: false // Helps avoid self-signed cert errors in some cloud envs
             },
+            // Debugging options
             debug: true,
             logger: true
         };
 
         console.log("📧 Email Config:", {
-            mode: isGmail ? 'Gmail Service' : 'Custom SMTP',
+            host: smtpHost,
+            port: smtpPort,
             user: transportConfig.auth.user ? '***' + transportConfig.auth.user.slice(-4) : 'MISSING'
         });
 
         const transporter = nodemailer.createTransport(transportConfig);
-
-        // Verify connection configuration (Non-blocking)
-        try {
-            await transporter.verify();
-            console.log("✅ Email Server is ready to take our messages");
-        } catch (error) {
-            console.warn("⚠️ Email Server Verification Warning:", error.message);
-            // We do NOT throw here anymore. We'll try to send anyway.
-        }
 
         const mailOptions = {
             from: `"Greencart" <${emailUser}>`,
