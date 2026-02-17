@@ -7,29 +7,28 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
 
         const nodemailer = (await import('nodemailer')).default;
 
+        // Minimal Configuration - removing specific optimizations that might conflict with Render's network
         const transportConfig = {
-            host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-            port: parseInt(process.env.EMAIL_PORT || '465'), // Default to 465 (SSL)
-            secure: process.env.EMAIL_SECURE === 'true' || process.env.EMAIL_PORT === '465' || !process.env.EMAIL_PORT, // Default to secure for 465
-            family: 4, // Force IPv4 to avoid timeouts on some cloud providers
-            dnsCache: false, // Disable cache to ensure fresh lookup
-            debug: true,
-            logger: true,
-            tls: {
-                rejectUnauthorized: false, // Permissive for debugging
-                ciphers: 'SSLv3' // Compatibility fallback
-            },
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
             auth: {
                 user: process.env.EMAIL_USER?.trim(),
                 pass: process.env.EMAIL_PASS?.replace(/\s+/g, '')
             },
-            connectionTimeout: 30000, // 30s
-            greetingTimeout: 30000,
-            socketTimeout: 30000
+            // Debugging options
+            debug: true,
+            logger: true
         };
-
-        // Reverted 'service: Gmail' override to allow explicit control. 
-        // We rely on longer timeouts and non-blocking verification now.
+        
+        // Allow env overrides if strictly necessary, but default to the above for Gmail
+        if (process.env.EMAIL_SERVICE === 'gmail') {
+             // If user explicitly wants "service: gmail" (simple mode)
+             transportConfig.service = 'gmail';
+             delete transportConfig.host;
+             delete transportConfig.port;
+             delete transportConfig.secure;
+        }
 
         console.log("📧 Email Config:", {
             host: transportConfig.host,
