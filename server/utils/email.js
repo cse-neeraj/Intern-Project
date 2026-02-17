@@ -10,8 +10,13 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
 
         console.warn("⚠️ GMAIL_REFRESH_TOKEN missing. Falling back to SMTP (May fail on Render).");
 
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            console.warn("Email sending skipped: EMAIL_USER or EMAIL_PASS not configured.");
+        const emailUser = process.env.EMAIL_USER || process.env.SMTP_MAIL;
+        const emailPass = process.env.EMAIL_PASS || process.env.SMTP_PASSWORD;
+
+        if (!emailUser || !emailPass) {
+            console.error("❌ Email sending failed: Missing credentials.");
+            console.error(`   EMAIL_USER/SMTP_MAIL: ${emailUser ? 'Set' : 'Missing'}`);
+            console.error(`   EMAIL_PASS/SMTP_PASSWORD: ${emailPass ? 'Set' : 'Missing'}`);
             return false;
         }
 
@@ -20,11 +25,11 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
         // Minimal Configuration - removing specific optimizations that might conflict with Render's network
         const transportConfig = {
             host: 'smtp.gmail.com',
-            port: 587,
-            secure: false, // true for 465, false for other ports
+            port: 465,
+            secure: true, // true for 465, false for other ports
             auth: {
-                user: process.env.EMAIL_USER?.trim(),
-                pass: process.env.EMAIL_PASS?.replace(/\s+/g, '')
+                user: emailUser.trim(),
+                pass: emailPass.replace(/\s+/g, '')
             },
             // Debugging options
             debug: true,
@@ -61,7 +66,7 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
         }
 
         const mailOptions = {
-            from: `"Greencart" <${process.env.EMAIL_USER}>`,
+            from: `"Greencart" <${emailUser}>`,
             to,
             subject,
             html,
