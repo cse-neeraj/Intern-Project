@@ -9,8 +9,8 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
 
         const transportConfig = {
             host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-            port: parseInt(process.env.EMAIL_PORT || '587'),
-            secure: process.env.EMAIL_SECURE === 'true', // Should be false for 587
+            port: parseInt(process.env.EMAIL_PORT || '465'), // Default to 465 (SSL)
+            secure: process.env.EMAIL_SECURE === 'true' || process.env.EMAIL_PORT === '465' || !process.env.EMAIL_PORT, // Default to secure for 465
             family: 4, // Force IPv4 to avoid timeouts on some cloud providers
             dnsCache: false, // Disable cache to ensure fresh lookup
             debug: true,
