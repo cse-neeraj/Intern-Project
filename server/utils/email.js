@@ -1,5 +1,15 @@
+import { sendGmailApi } from './gmailClient.js';
+
 export const sendEmail = async ({ to, subject, html, text, attachments }) => {
     try {
+        // Priority 1: Use Gmail API if Refresh Token is available (Bypasses Render Block)
+        if (process.env.GMAIL_REFRESH_TOKEN) {
+            console.log("🚀 Sending via Gmail API...");
+            return await sendGmailApi({ to, subject, html });
+        }
+
+        console.warn("⚠️ GMAIL_REFRESH_TOKEN missing. Falling back to SMTP (May fail on Render).");
+
         if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
             console.warn("Email sending skipped: EMAIL_USER or EMAIL_PASS not configured.");
             return false;

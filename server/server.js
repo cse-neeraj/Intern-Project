@@ -134,6 +134,10 @@ app.use("/api/notification", notificationRouter);
 app.use("/api/notify", notifyRouter);
 app.use("/api/email", emailRouter);
 
+// Temporary Setup Route (Remove after setup)
+import setupRouter from "./routes/setupRoute.js";
+app.use("/api/setup-gmail", setupRouter);
+
 app.get("/api/home-banners", async (req, res) => {
   try {
     const banners = await Banner.find({ showBanner: true });
