@@ -1,4 +1,4 @@
-import "./configs/envLoader.js";
+import "./configs/envLoader.js"; // Force restart
 import express from "express";
 import cors from "cors";
 import http from "http";
