@@ -22,43 +22,35 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
 
         const nodemailer = (await import('nodemailer')).default;
 
-        const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
-        const smtpPort = Number(process.env.SMTP_PORT) || 587;
+        // Use 'service: gmail' for Gmail as it is more reliable on cloud platforms (handles ports/TLS automatically)
+        const isGmail = !process.env.SMTP_HOST || process.env.SMTP_HOST.includes('gmail');
 
-        // Minimal Configuration - removing specific optimizations that might conflict with Render's network
-        const transportConfig = {
-            host: smtpHost,
-            port: smtpPort,
-            secure: smtpPort === 465, // true for 465, false for other ports
+        const transportConfig = isGmail ? {
+            service: 'gmail',
+            auth: {
+                user: emailUser.trim(),
+                pass: emailPass.replace(/\s+/g, '')
+            },
+            debug: true,
+            logger: true
+        } : {
+            host: process.env.SMTP_HOST,
+            port: Number(process.env.SMTP_PORT) || 587,
+            secure: Number(process.env.SMTP_PORT) === 465,
             auth: {
                 user: emailUser.trim(),
                 pass: emailPass.replace(/\s+/g, '')
             },
             tls: {
-                rejectUnauthorized: false // Helps avoid self-signed cert errors in some cloud envs
+                rejectUnauthorized: false
             },
-            connectionTimeout: 10000, // Fail fast (10s) to avoid hanging
-            // Debugging options
             debug: true,
             logger: true
         };
-        
-        // Allow env overrides if strictly necessary, but default to the above for Gmail
-        if (process.env.EMAIL_SERVICE === 'gmail') {
-             // If user explicitly wants "service: gmail" (simple mode)
-             transportConfig.service = 'gmail';
-             delete transportConfig.host;
-             delete transportConfig.port;
-             delete transportConfig.secure;
-        }
 
         console.log("📧 Email Config:", {
-            host: transportConfig.host,
-            port: transportConfig.port,
-            secure: transportConfig.secure,
-            family: transportConfig.family,
-            user: transportConfig.auth.user ? '***' + transportConfig.auth.user.slice(-4) : 'MISSING',
-            pass: transportConfig.auth.pass ? 'PRESENT' : 'MISSING'
+            mode: isGmail ? 'Gmail Service' : 'Custom SMTP',
+            user: transportConfig.auth.user ? '***' + transportConfig.auth.user.slice(-4) : 'MISSING'
         });
 
         const transporter = nodemailer.createTransport(transportConfig);
