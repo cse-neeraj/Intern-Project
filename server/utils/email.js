@@ -10,23 +10,26 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
 
         console.warn("⚠️ GMAIL_REFRESH_TOKEN missing. Falling back to SMTP (May fail on Render).");
 
-        const emailUser = process.env.EMAIL_USER || process.env.SMTP_MAIL;
-        const emailPass = process.env.EMAIL_PASS || process.env.SMTP_PASSWORD;
+        const emailUser = process.env.EMAIL_USER || process.env.SMTP_MAIL || process.env.SMTP_USER;
+        const emailPass = process.env.EMAIL_PASS || process.env.SMTP_PASSWORD || process.env.SMTP_PASS;
 
         if (!emailUser || !emailPass) {
             console.error("❌ Email sending failed: Missing credentials.");
-            console.error(`   EMAIL_USER/SMTP_MAIL: ${emailUser ? 'Set' : 'Missing'}`);
-            console.error(`   EMAIL_PASS/SMTP_PASSWORD: ${emailPass ? 'Set' : 'Missing'}`);
+            console.error(`   EMAIL_USER / SMTP_MAIL: ${emailUser ? 'Set' : 'Missing'}`);
+            console.error(`   EMAIL_PASS / SMTP_PASSWORD: ${emailPass ? 'Set' : 'Missing'}`);
             return false;
         }
 
         const nodemailer = (await import('nodemailer')).default;
 
+        const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+        const smtpPort = Number(process.env.SMTP_PORT) || 465;
+
         // Minimal Configuration - removing specific optimizations that might conflict with Render's network
         const transportConfig = {
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true, // true for 465, false for other ports
+            host: smtpHost,
+            port: smtpPort,
+            secure: smtpPort === 465, // true for 465, false for other ports
             auth: {
                 user: emailUser.trim(),
                 pass: emailPass.replace(/\s+/g, '')

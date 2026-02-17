@@ -42,7 +42,7 @@ const sendGmailApi = async ({ to, subject, html }) => {
 
         const gmail = google.gmail({ version: 'v1', auth });
 
-        const emailUser = process.env.EMAIL_USER || process.env.SMTP_MAIL;
+        const emailUser = process.env.EMAIL_USER || process.env.SMTP_MAIL || process.env.SMTP_USER;
         const raw = makeBody(to, `Greencart <${emailUser}>`, subject, html);
 
         const res = await gmail.users.messages.send({
