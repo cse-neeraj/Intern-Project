@@ -23,30 +23,13 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
                 user: process.env.EMAIL_USER?.trim(),
                 pass: process.env.EMAIL_PASS?.replace(/\s+/g, '')
             },
-            connectionTimeout: 10000, // 10s
-            greetingTimeout: 10000
+            connectionTimeout: 30000, // 30s
+            greetingTimeout: 30000,
+            socketTimeout: 30000
         };
 
-        // FORCE VALIDATION: If using Gmail, switch to 'service: Gmail' preset.
-        // This is the most robust way to handle Gmail on cloud platforms as it handles ports/secure automatically.
-        if (transportConfig.host === 'smtp.gmail.com') {
-             console.log("⚠️ Detected Gmail. Switching to 'service: Gmail' preset for reliability.");
-             transportConfig.service = 'Gmail';
-             transportConfig.host = undefined;
-             transportConfig.port = undefined;
-             transportConfig.secure = undefined;
-        }
-
-        /* 
-        // EMAIL_SERVICE overrides manual host/port which causes issues with 587
-        if (process.env.EMAIL_SERVICE) {
-            if (process.env.EMAIL_SERVICE.toLowerCase() === 'gmail') {
-                transportConfig.service = 'Gmail'; // Use built-in Gmail preset (Port 465, SSL)
-            } else {
-                transportConfig.service = process.env.EMAIL_SERVICE;
-            }
-        }
-        */
+        // Reverted 'service: Gmail' override to allow explicit control. 
+        // We rely on longer timeouts and non-blocking verification now.
 
         console.log("📧 Email Config:", {
             host: transportConfig.host,
@@ -59,13 +42,13 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
 
         const transporter = nodemailer.createTransport(transportConfig);
 
-        // Verify connection configuration
+        // Verify connection configuration (Non-blocking)
         try {
             await transporter.verify();
             console.log("✅ Email Server is ready to take our messages");
         } catch (error) {
-            console.error("❌ Email Server Connection Failed:", error.message);
-            throw new Error(`Connection Failed: ${error.message}`);
+            console.warn("⚠️ Email Server Verification Warning:", error.message);
+            // We do NOT throw here anymore. We'll try to send anyway.
         }
 
         const mailOptions = {
