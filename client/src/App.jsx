@@ -58,6 +58,11 @@ const App = () => {
     checkSellerAuth();
 
     const fetchUser = async () => {
+      const storedToken = localStorage.getItem("token");
+      if (!storedToken) {
+          setLoading(false);
+          return;
+      }
       try {
         const { data } = await axios.post(backendUrl + '/api/user/is-auth', {}, { withCredentials: true });
         if (data.success) {
