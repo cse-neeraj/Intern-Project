@@ -23,7 +23,7 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
         const nodemailer = (await import('nodemailer')).default;
 
         const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
-        const smtpPort = Number(process.env.SMTP_PORT) || 465;
+        const smtpPort = Number(process.env.SMTP_PORT) || 587;
 
         // Minimal Configuration - removing specific optimizations that might conflict with Render's network
         const transportConfig = {
@@ -34,6 +34,10 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
                 user: emailUser.trim(),
                 pass: emailPass.replace(/\s+/g, '')
             },
+            tls: {
+                rejectUnauthorized: false // Helps avoid self-signed cert errors in some cloud envs
+            },
+            connectionTimeout: 10000, // Fail fast (10s) to avoid hanging
             // Debugging options
             debug: true,
             logger: true
@@ -83,6 +87,9 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
         console.error("Error sending email:", error);
         if (error.responseCode === 535) {
             console.error("Tip: If using Gmail, use an App Password instead of your login password. Enable 2-Step Verification -> Security -> App Passwords.");
+        }
+        if (error.code === 'ETIMEDOUT') {
+            console.error("Tip: Connection timed out. If on Render, try setting SMTP_PORT to 587 in your environment variables.");
         }
         throw error;
     }
