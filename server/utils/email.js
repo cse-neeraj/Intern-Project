@@ -27,14 +27,14 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
             greetingTimeout: 10000
         };
 
-        // FORCE VALIDATION: If using Gmail, allow override to 465 (SSL) if 587 is failing or configured
+        // FORCE VALIDATION: If using Gmail, switch to 'service: Gmail' preset.
+        // This is the most robust way to handle Gmail on cloud platforms as it handles ports/secure automatically.
         if (transportConfig.host === 'smtp.gmail.com') {
-             // If env var is set to 587, force it to 465 because 587 is blocked on some cloud providers (like Render)
-             if (transportConfig.port === 587) {
-                 console.log("⚠️ Detected Gmail on Port 587. Forcing switch to Port 465 (SSL) for reliability on cloud hosting.");
-                 transportConfig.port = 465;
-                 transportConfig.secure = true;
-             }
+             console.log("⚠️ Detected Gmail. Switching to 'service: Gmail' preset for reliability.");
+             transportConfig.service = 'Gmail';
+             transportConfig.host = undefined;
+             transportConfig.port = undefined;
+             transportConfig.secure = undefined;
         }
 
         /* 
