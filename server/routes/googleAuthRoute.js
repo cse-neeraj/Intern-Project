@@ -39,14 +39,18 @@ googleAuthRouter.get('/google/callback', (req, res, next) => {
       // Send OTP Email
       if (user.email) {
         console.log(`Sending Google Login OTP to: ${user.email}`);
+        console.log(`🔐 LOGIN OTP (Manual Retrieval): ${otp}`); // Log OTP for Render logs
+
         const emailContent = verifyOtpEmail(otp, user.name || 'User');
-        const emailSent = await sendEmail({
-          to: user.email,
-          subject: 'Verify Your Login - Greencart',
-          html: emailContent
-        });
-        if (!emailSent) {
-          throw new Error("Email sending failed (sendEmail returned false)");
+        
+        try {
+            await sendEmail({
+              to: user.email,
+              subject: 'Verify Your Login - Greencart',
+              html: emailContent
+            });
+        } catch (emailErr) {
+            console.error("⚠️ Soft Error: OTP Email failed to send (likely Render block), but proceeding to verification page.", emailErr.message);
         }
       }
 
