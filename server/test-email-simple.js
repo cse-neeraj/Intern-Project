@@ -1,28 +1,45 @@
 import 'dotenv/config';
-import { sendEmail } from './utils/email.js';
+import nodemailer from 'nodemailer';
 
-const testEmail = async () => {
-    console.log("Testing Email Sending...");
-    console.log(`User: ${process.env.EMAIL_USER}`);
-    console.log(`Pass: ${process.env.EMAIL_PASS ? '********' : 'Not Set'}`);
-    console.log(`Host: ${process.env.EMAIL_HOST}`);
-    console.log(`Port: ${process.env.EMAIL_PORT}`);
+async function testEmail() {
+    console.log("🚀 Starting Email Test...");
+
+    const user = process.env.EMAIL_USER;
+    const pass = process.env.EMAIL_PASS;
+
+    if (!user || !pass) {
+        console.error("❌ Missing EMAIL_USER or EMAIL_PASS");
+        return;
+    }
+
+    console.log(`📧 Using Account: ${user}`);
+    
+    // Create transporter using 'Gmail' service
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: user,
+            pass: pass.replace(/\s+/g, '') // remove spaces just in case
+        }
+    });
 
     try {
-        const result = await sendEmail({
-            to: process.env.EMAIL_USER, // Send to self
-            subject: 'Test Email from Script',
-            html: '<h1>If you see this, email is working!</h1>'
+        console.log("1️⃣ Verifying connection...");
+        await transporter.verify();
+        console.log("✅ Connection Verified!");
+
+        console.log("2️⃣ Sending test email...");
+        const info = await transporter.sendMail({
+            from: `"Test Script" <${user}>`,
+            to: user, // Send to self
+            subject: "Test Email from Debug Script",
+            text: "If you see this, email sending is WORKING!",
         });
 
-        if (result) {
-            console.log("✅ Email sent successfully!");
-        } else {
-            console.log("❌ Email failed to send (Function returned false).");
-        }
+        console.log("✅ Email sent: %s", info.messageId);
     } catch (error) {
-        console.error("❌ Email failed with error:", error);
+        console.error("❌ Error:", error);
     }
-};
+}
 
 testEmail();

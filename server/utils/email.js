@@ -27,6 +27,8 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
             greetingTimeout: 10000
         };
 
+        /* 
+        // EMAIL_SERVICE overrides manual host/port which causes issues with 587
         if (process.env.EMAIL_SERVICE) {
             if (process.env.EMAIL_SERVICE.toLowerCase() === 'gmail') {
                 transportConfig.service = 'Gmail'; // Use built-in Gmail preset (Port 465, SSL)
@@ -34,6 +36,7 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
                 transportConfig.service = process.env.EMAIL_SERVICE;
             }
         }
+        */
 
         console.log("📧 Email Config:", {
             host: transportConfig.host,
