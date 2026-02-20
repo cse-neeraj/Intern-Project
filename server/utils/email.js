@@ -31,11 +31,19 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
         // on cloud environments like Render that might block specific ports.
         if (smtpHost.includes('gmail')) {
             console.log("Using 'service: gmail' configuration for Nodemailer.");
+            // Render often blocks port 465. We force port 587 by NOT using 'service: gmail' blindly
+            // or by explicitly setting the port if the service option allows (it often overrides).
+            // Better to use explicit host/port for control on Render.
             transportConfig = {
-                service: 'gmail',
+                host: 'smtp.gmail.com',
+                port: 587,
+                secure: false, // Must be false for port 587 (STARTTLS)
                 auth: {
                     user: emailUser.trim(),
                     pass: emailPass.replace(/\s+/g, '')
+                },
+                tls: {
+                    rejectUnauthorized: false
                 }
             };
         } else {
