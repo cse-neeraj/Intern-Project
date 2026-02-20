@@ -6,12 +6,15 @@ import {
   addProduct,
   productById,
   productList,
+
   changeStock,
+  updateProduct,
 } from "../controllers/productController.js";
 
 const productRouter = express.Router();
 
 productRouter.post("/add", upload.array(['images']),addProduct);
+productRouter.post("/update", upload.array(['images']), authSeller, updateProduct);
 productRouter.get("/list", productList);
 productRouter.get("/:id", productById);
 productRouter.post("/stock", authSeller, changeStock);

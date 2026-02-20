@@ -192,7 +192,9 @@ const Cart = () => {
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
     } finally {
-      setLoading(false);
+      if (paymentOptions !== "Razorpay") {
+          setLoading(false);
+      }
     }
   };
 
@@ -623,7 +625,7 @@ const Cart = () => {
                       className="w-full appearance-none bg-white border border-gray-200 text-gray-700 font-medium py-3 px-4 pr-10 rounded-xl leading-tight focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 cursor-pointer text-sm shadow-sm transition-all hover:border-gray-300"
                     >
                       <option value="COD">Cash On Delivery (COD)</option>
-                      <option value="Online">Online Payment (Stripe)</option>
+                      <option value="Online">Stripe (International Cards)</option>
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useAppContext } from "../../context/AppContext";
 import { assets } from "../../assets/assets";
@@ -34,6 +35,44 @@ const icons = {
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
       <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3.25h3m-3-3.75h3m-12-3h15.75c.828 0 1.5.672 1.5 1.5v2.25H3.375V5.25c0-.828.672-1.5 1.5-1.5z" />
     </svg>
+  ),
+  addProduct: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 25 25" fill="none" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
+      <path d="M15.8386 13.1039H13.1068M13.1068 13.1039H10.375M13.1068 13.1039V10.3721M13.1068 13.1039V15.8356" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round"/>
+      <path d="M22.2119 13.106C22.2119 17.3985 22.2119 19.5449 20.8784 20.8784C19.5449 22.2119 17.3985 22.2119 13.106 22.2119C8.81337 22.2119 6.66707 22.2119 5.33354 20.8784C4 19.5449 4 17.3985 4 13.106C4 8.81337 4 6.66707 5.33354 5.33354C6.66707 4 8.81337 4 13.106 4C17.3985 4 19.5449 4 20.8784 5.33354C21.7651 6.22022 22.0622 7.46623 22.1617 9.46358" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round"/>
+    </svg>
+  ),
+  productList: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 25 25" fill="none" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
+      <path d="M15.1665 17.3333L17.4415 20.0417L21.6665 14.625" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M10.8333 15.167H3.25" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round"/>
+      <path d="M10.8333 19.5H3.25" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round"/>
+      <path d="M3.25 6.5H14.625H3.25ZM21.6667 6.5H19.2292H21.6667Z" fill="currentColor" fillOpacity="0.2"/>
+      <path d="M3.25 6.5H14.625M21.6667 6.5H19.2292" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round"/>
+      <path d="M21.6667 10.833H10.2917M3.25 10.833H5.6875" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round"/>
+    </svg>
+  ),
+  orderList: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 25 25" fill="none" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
+      <path d="M22.4926 6.13745C22.4976 6.07819 22.5 6.01875 22.5 5.95947C22.5 4.32761 21.1724 3 19.5405 3C19.507 3 19.4744 3.00131 19.3985 3.00464L6.07538 3.0037C6.03687 3.00185 5.99778 3 5.95725 3C4.32796 3 3.00257 4.325 3.00257 5.9556L3.00666 6.19411H3L3.00852 19.1517L3.00499 19.5956C3.00499 21.2078 4.31648 22.5193 5.92852 22.5193C5.96485 22.5193 6.08113 22.5141 6.08315 22.5141L19.3448 22.516C19.4098 22.5237 19.4802 22.5262 19.5528 22.5262C20.3328 22.5262 21.0667 22.2223 21.6191 21.6702C22.1717 21.1184 22.4759 20.3856 22.4759 19.6058L22.4728 19.3441H22.4928L22.4926 6.13742V6.13745ZM5.99205 21.2478L5.93576 21.2433C5.00965 21.2433 4.27741 20.4841 4.2689 19.5161V8.84914H21.2245L21.2345 19.4157L21.2152 19.4781C21.2036 19.5181 21.1978 19.5561 21.1978 19.5907C21.1978 20.4702 20.5106 21.1972 19.633 21.2459L19.3974 21.2595V21.248L5.99205 21.2478ZM21.2243 7.58062H4.27018L4.26202 6.14468L4.28053 6.081C4.29185 6.04136 4.29756 6.00194 4.29756 5.96672C4.29756 5.04689 5.05386 4.29708 6.00018 4.29394L6.00998 4.29246L19.4729 4.29286L19.5309 4.29728C20.4527 4.29728 21.2027 5.0473 21.2027 5.96916C21.2027 5.99804 21.207 6.02768 21.217 6.06786L21.2242 6.08712V7.58062H21.2243Z" fill="currentColor"/>
+      <path d="M16.8009 11.8711C16.6292 11.8711 16.4674 11.9381 16.3453 12.0602L11.4794 16.9263L9.15509 14.6022C9.03435 14.4802 8.87306 14.413 8.70119 14.413C8.52931 14.413 8.36748 14.48 8.24563 14.6017C8.12415 14.7218 8.05672 14.8826 8.05615 15.0544C8.05578 15.2267 8.12301 15.3889 8.24541 15.5117L11.0232 18.2897C11.1446 18.4108 11.3066 18.4775 11.4794 18.4775C11.6519 18.4775 11.814 18.4108 11.9353 18.2895L17.2546 12.9702C17.3761 12.8502 17.4435 12.6896 17.4441 12.5176C17.4444 12.3446 17.377 12.182 17.255 12.0605C17.1341 11.9383 16.9728 11.8711 16.8009 11.8711H16.8009Z" fill="currentColor"/>
+    </svg>
+  ),
+  categoryList: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 25 25" fill="none" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
+      <path d="M10.8333 3.25H3.25V10.8333H10.8333V3.25Z" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M22.75 3.25H15.1667V10.8333H22.75V3.25Z" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M22.75 15.1667H15.1667V22.75H22.75V15.1667Z" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M10.8333 15.1667H3.25V22.75H10.8333V15.1667Z" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  banner: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 25 25" fill="none" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
+      <path d="M21.6667 4.33334H4.33333C3.13672 4.33334 2.16667 5.30339 2.16667 6.50001V19.5C2.16667 20.6966 3.13672 21.6667 4.33333 21.6667H21.6667C22.8633 21.6667 23.8333 20.6966 23.8333 19.5V6.50001C23.8333 5.30339 22.8633 4.33334 21.6667 4.33334Z" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M2.16667 15.1667L7.58333 9.75001L14.0833 16.25" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M11.9167 14.0833L15.1667 10.8333L23.8333 19.5" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M17.3333 9.75001C18.53 9.75001 19.5 8.77996 19.5 7.58334C19.5 6.38673 18.53 5.41667 17.3333 5.41667C16.1367 5.41667 15.1667 6.38673 15.1667 7.58334C15.1667 8.77996 16.1367 9.75001 17.3333 9.75001Z" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
   )
 };
 
@@ -48,23 +87,48 @@ const SellerLayout = () => {
     localStorage.setItem('sidebarCollapsed', isSidebarCollapsed);
   }, [isSidebarCollapsed]);
 
+  /* Sidebar logic updated to support nested menus */
+  const [openSubmenu, setOpenSubmenu] = useState(null);
+
+  const toggleSubmenu = (name) => {
+    setOpenSubmenu(openSubmenu === name ? null : name);
+  };
+  
   const sidebarLinks = [
-    { name: "Add Product", path: "/seller", icon: assets.add_icon },
+    { name: "Add Product", path: "/seller", icon: icons.addProduct },
     {
       name: "Products List",
       path: "/seller/product-list",
-      icon: assets.product_list_icon,
+      icon: icons.productList,
     },
-    { name: "Orders", path: "/seller/orders", icon: assets.order_icon },
+    { name: "Orders", path: "/seller/orders", icon: icons.orderList },
     { name: "Inventory", path: "/seller/inventory", icon: icons.inventory },
-    { name: "Categories", path: "/seller/category", icon: assets.category_icon },
-    { name: "Banner", path: "/seller/banner", icon: assets.banner_icon },
-    { name: "Store Info", path: "/seller/store-settings", icon: icons.storeInfo },
+    { name: "Categories", path: "/seller/category", icon: icons.categoryList },
+    { name: "Banner", path: "/seller/banner", icon: icons.banner },
+    { 
+        name: "Store Settings", 
+        path: "/seller/store-settings", 
+        icon: icons.storeInfo,
+        submenu: [
+            { name: "Store Info", path: "/seller/store-settings" },
+            { name: "Create Account", path: "/seller/create-account" },
+            { name: "History of Account", path: "/seller/account-history" }
+        ]
+    },
     { name: "Customer Info", path: "/seller/contact-requests", icon: icons.customerInfo },
     { name: "Stock Alerts", path: "/seller/product-subscribers", icon: icons.bell },
     { name: "Subscribers", path: "/seller/newsletter-subscribers", icon: icons.subscribers },
-    { name: "Notification", path: "/seller/notification", icon: icons.notification },
+    { 
+        name: "Notification", 
+        path: "/seller/create-notification", 
+        icon: icons.notification,
+        submenu: [
+            { name: "Create Notification", path: "/seller/create-notification" },
+            { name: "Notification History", path: "/seller/notification-history" }
+        ]
+    },
   ];
+
   const logout = async () => {
     try{
       const {data} = await axios.post(backendUrl + '/api/seller/logout', {}, { withCredentials: true })
@@ -81,17 +145,33 @@ const SellerLayout = () => {
     }
   };
 
+
+  const handleLinkClick = (path) => {
+      // Handle scrolling if hash is present
+      if (path.includes('#')) {
+           const id = path.split('#')[1];
+           setTimeout(() => {
+               const element = document.getElementById(id);
+               if (element) {
+                   element.scrollIntoView({ behavior: 'smooth' });
+               }
+           }, 100);
+      }
+      // If mobile, close sidebar logic could go here if implemented
+  }
+
+  // ... rest of component logic ...
+
   return (
     <div className="min-h-screen bg-white">
-      <div className="flex items-center justify-between px-4 md:px-8 border-b h-16 border-gray-200 py-3 bg-white shadow-sm">
+      {/* ... header code ... */}
+      <div className="flex items-center justify-between px-4 border-b h-16 border-gray-200 py-3 bg-white shadow-sm">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors focus:outline-none"
+            className="p-2 rounded-full hover:bg-gray-100 transition-all duration-200 focus:outline-none"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-            </svg>
+            <img src={assets.menu_icon} alt="menu" className="w-6 h-6 object-contain opacity-70 hover:opacity-100" />
           </button>
           <Link to="/">
             <img
@@ -136,25 +216,67 @@ const SellerLayout = () => {
         </div>
       </div>
       <div className="flex">
-        <div className={`border-r h-[calc(100vh-64px)] text-base border-gray-200 pt-6 flex flex-col transition-all duration-300 flex-shrink-0 bg-white ${isSidebarCollapsed ? 'w-20' : 'w-20 md:w-64'}`}>
+        <div className={`border-r h-[calc(100vh-64px)] overflow-y-auto text-base border-gray-200 pt-6 flex flex-col transition-all duration-300 flex-shrink-0 bg-white ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
           {sidebarLinks.map((item) => (
-            <NavLink
-              to={item.path}
-              key={item.name}
-              end={item.path === "/seller"}
-              className={({ isActive }) =>
-                `flex items-center py-3.5 px-6 gap-4 transition-all duration-200 overflow-hidden ${isActive ? "border-r-4 border-primary text-primary bg-primary/5 font-semibold" : "text-gray-500 hover:bg-gray-100/90 hover:text-gray-800"}`
-              }
-              title={item.name}
-            >
-              <div className="flex-shrink-0">
-                {typeof item.icon === 'string' ? <img src={item.icon} alt="icon" className="w-6 h-6" /> : React.cloneElement(item.icon, { className: 'w-6 h-6' })}
-              </div>
-              <p className={`whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'hidden' : 'hidden md:block'}`}>{item.name}</p>
-            </NavLink>
+            <div key={item.name}>
+                {item.submenu ? (
+                    <>
+                        <div 
+                            onClick={() => {
+                                if(isSidebarCollapsed) setIsSidebarCollapsed(false);
+                                toggleSubmenu(item.name);
+                            }}
+                            className={`flex items-center justify-between py-3.5 px-6 cursor-pointer transition-all duration-200 ${openSubmenu === item.name ? "bg-gray-50 text-gray-900" : "text-gray-500 hover:bg-gray-100/90 hover:text-gray-800"}`}
+                             title={item.name}
+                        >
+                             <div className="flex items-center gap-4 overflow-hidden">
+                                <div className="flex-shrink-0">
+                                    {typeof item.icon === 'string' ? <img src={item.icon} alt="icon" className="w-6 h-6" /> : React.cloneElement(item.icon, { className: 'w-6 h-6' })}
+                                </div>
+                                <p className={`whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'hidden' : 'block'}`}>{item.name}</p>
+                            </div>
+                            {!isSidebarCollapsed && (
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-4 h-4 transition-transform duration-200 ${openSubmenu === item.name ? 'rotate-180' : ''}`}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            )}
+                        </div>
+                        {item.submenu && openSubmenu === item.name && !isSidebarCollapsed && (
+                            <div className="bg-gray-50 border-t border-b border-gray-100">
+                                {item.submenu.map((subItem) => (
+                                    <NavLink
+                                        key={subItem.name}
+                                        to={subItem.path}
+                                        onClick={() => handleLinkClick(subItem.path)}
+                                        className={({ isActive }) =>
+                                            `block py-2.5 pl-16 pr-6 text-sm transition-colors ${isActive && !subItem.path.includes('#') ? "text-primary font-medium" : "text-gray-500 hover:text-gray-900"}`
+                                        }
+                                    >
+                                        {subItem.name}
+                                    </NavLink>
+                                ))}
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <NavLink
+                    to={item.path}
+                    end={item.path === "/seller"}
+                    className={({ isActive }) =>
+                        `flex items-center py-3.5 px-6 gap-4 transition-all duration-200 overflow-hidden ${isActive ? "border-r-4 border-primary text-primary bg-primary/5 font-semibold" : "text-gray-500 hover:bg-gray-100/90 hover:text-gray-800"}`
+                    }
+                    title={item.name}
+                    >
+                    <div className="flex-shrink-0">
+                        {typeof item.icon === 'string' ? <img src={item.icon} alt="icon" className="w-6 h-6" /> : React.cloneElement(item.icon, { className: 'w-6 h-6' })}
+                    </div>
+                    <p className={`whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'hidden' : 'block'}`}>{item.name}</p>
+                    </NavLink>
+                )}
+            </div>
           ))}
         </div>
-        <div className="flex-1">
+        <div className="flex-1 overflow-y-auto h-[calc(100vh-64px)]">
           <Outlet />
         </div>
       </div>

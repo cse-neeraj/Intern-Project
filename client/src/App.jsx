@@ -1,37 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense, lazy } from "react";
 import Navbar from "./components/Navbar";
 import { Route, Routes, useLocation, Navigate } from "react-router-dom";
-import Home from "./pages/home";
 import toast, { Toaster } from "react-hot-toast";
-import Cart from "./pages/Cart";
-import ProductDetails from "./pages/ProductDetails";
 import Login from "./components/Login";
 import { useAppContext } from "./context/AppContext";
 import Footer from "./components/Footer";
-import AllProducts from "./pages/AllProducts";
-import ProductCategories from "./pages/ProductCategories";
-import AddAddress from "./pages/AddAddress";
-import MyOrders from "./pages/MyOrders";
-import SellerLayout from "./pages/seller/SellerLayout";
-import AddProduct from "./pages/seller/AddProduct";
-import ProductList from "./pages/seller/ProductList";
-import Orders from "./pages/seller/Orders";
-import Category from "./pages/seller/Category";
-import Contact from "./pages/Contact";
 import Loading from "./components/Loading";
-import SellerBannerConfig from "./components/SellerBannerConfig";
-import StoreSettings from "./pages/seller/StoreSettings";
-import ContactRequests from "./pages/seller/ContactRequests";
-import NewsletterSubscribers from "./pages/seller/NewsletterSubscribers";
-import AddNotification from "./pages/seller/AddNotification";
-import Inventory from "./pages/seller/Inventory";
-import MySubscriptions from "./pages/MySubscriptions";
-import ProductSubscribers from "./pages/seller/ProductSubscribers";
-import ResetPassword from "./pages/ResetPassword";
-import Profile from "./pages/Profile";
-import SellerLogin from "./pages/seller/SellerLogin";
 
-import VerifyOtp from "./pages/VerifyOtp";
+// Lazy Load Pages
+const Home = lazy(() => import("./pages/home"));
+const Cart = lazy(() => import("./pages/Cart"));
+const ProductDetails = lazy(() => import("./pages/ProductDetails"));
+const AllProducts = lazy(() => import("./pages/AllProducts"));
+const ProductCategories = lazy(() => import("./pages/ProductCategories"));
+const AddAddress = lazy(() => import("./pages/AddAddress"));
+const MyOrders = lazy(() => import("./pages/MyOrders"));
+const SellerLayout = lazy(() => import("./pages/seller/SellerLayout"));
+const AddProduct = lazy(() => import("./pages/seller/AddProduct"));
+const EditProduct = lazy(() => import("./pages/seller/EditProduct"));
+const ProductList = lazy(() => import("./pages/seller/ProductList"));
+const Orders = lazy(() => import("./pages/seller/Orders"));
+const Category = lazy(() => import("./pages/seller/Category"));
+const Contact = lazy(() => import("./pages/Contact"));
+const SellerBannerConfig = lazy(() => import("./components/SellerBannerConfig"));
+const StoreSettings = lazy(() => import("./pages/seller/StoreSettings"));
+const CreateSeller = lazy(() => import("./pages/seller/CreateSeller"));
+const SellerHistory = lazy(() => import("./pages/seller/SellerHistory"));
+const ContactRequests = lazy(() => import("./pages/seller/ContactRequests"));
+const NewsletterSubscribers = lazy(() => import("./pages/seller/NewsletterSubscribers"));
+const CreateNotification = lazy(() => import("./pages/seller/CreateNotification"));
+const NotificationHistory = lazy(() => import("./pages/seller/NotificationHistory"));
+const Inventory = lazy(() => import("./pages/seller/Inventory"));
+const MySubscriptions = lazy(() => import("./pages/MySubscriptions"));
+const ProductSubscribers = lazy(() => import("./pages/seller/ProductSubscribers"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Profile = lazy(() => import("./pages/Profile"));
+const SellerLogin = lazy(() => import("./pages/seller/SellerLogin"));
+const VerifyOtp = lazy(() => import("./pages/VerifyOtp"));
 
 const App = () => {
   const { showUserLogin, isSeller, backendUrl, axios, setIsSeller, searchQuery, navigate, products, user, setToken, setUser } = useAppContext();
@@ -174,6 +179,7 @@ const App = () => {
       />
 
       <div className={`${isSellerPath ? "" : "px-6 md:px-16 lg:px-24"}`}>
+        <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Home />} />
 
@@ -197,17 +203,23 @@ const App = () => {
           >
             <Route index element={isSeller ? <AddProduct /> : null} />
             <Route path="product-list" element={<ProductList />} />
+            <Route path="product-list/edit/:id" element={<EditProduct />} />
             <Route path="orders" element={<Orders />} />
             <Route path="inventory" element={<Inventory />} />
             <Route path="category" element={<Category />} />
             <Route path="banner" element={<SellerBannerConfig />} />
             <Route path="store-settings" element={<StoreSettings />} />
+            <Route path="create-account" element={<CreateSeller />} />
+            <Route path="account-history" element={<SellerHistory />} />
             <Route path="contact-requests" element={<ContactRequests />} />
             <Route path="product-subscribers" element={<ProductSubscribers />} />
             <Route path="newsletter-subscribers" element={<NewsletterSubscribers />} />
-            <Route path="notification" element={<AddNotification />} />
+            <Route path="newsletter-subscribers" element={<NewsletterSubscribers />} />
+            <Route path="create-notification" element={<CreateNotification />} />
+            <Route path="notification-history" element={<NotificationHistory />} />
           </Route>
         </Routes>
+        </Suspense>
       </div>
       {!isSellerPath && <Footer />}
     </div>

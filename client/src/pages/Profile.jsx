@@ -9,6 +9,7 @@ const Profile = () => {
   const [mobile, setMobile] = useState('');
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   const uploadImage = async (file) => {
       try {
@@ -65,13 +66,15 @@ const Profile = () => {
             <img
               src={URL.createObjectURL(image)}
               alt="Profile"
-              className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
+              className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => setIsImageModalOpen(true)}
             />
           ) : (
             <img
               src={user?.profilePicture || assets.profile_icon}
               alt="Profile"
-              className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
+              className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => setIsImageModalOpen(true)}
             />
           )}
           <label htmlFor="image" className="absolute bottom-0 right-[35%] cursor-pointer bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors">
@@ -132,7 +135,32 @@ const Profile = () => {
           </button>
         </form>
       </div>
-    </div>
+
+      {/* Profile Image Modal */}
+      {isImageModalOpen && (
+        <div 
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+            onClick={() => setIsImageModalOpen(false)}
+        >
+            <div className="relative max-w-4xl max-h-[90vh] w-full flex items-center justify-center">
+                <button 
+                    onClick={() => setIsImageModalOpen(false)}
+                    className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors bg-white/10 p-2 rounded-full backdrop-blur-md"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <img 
+                    src={image ? URL.createObjectURL(image) : (user?.profilePicture || assets.profile_icon)} 
+                    alt="Profile Full View" 
+                    className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl border border-white/10"
+                    onClick={(e) => e.stopPropagation()}
+                />
+            </div>
+        </div>
+      )}
+      </div>
   );
 };
 

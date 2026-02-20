@@ -97,6 +97,26 @@ try {
         updatedAt: new Date(),
       });
       logger.info("✅ Seeded 'categories' with 1 document.");
+      logger.info("✅ Seeded 'categories' with 1 document.");
+    }
+    
+    // Seed Seller
+    const sellerCollection = db.collection("sellers");
+    const sellerCount = await sellerCollection.countDocuments();
+    if (sellerCount === 0 && process.env.SELLER_EMAIL && process.env.SELLER_PASSWORD) {
+        logger.warn("⚠️ 'sellers' collection is empty. Seeding with .env credentials...");
+        const bcrypt = (await import("bcryptjs")).default;
+        const hashedPassword = await bcrypt.hash(process.env.SELLER_PASSWORD, 10);
+        
+        await sellerCollection.insertOne({
+            name: "Admin Seller",
+            email: process.env.SELLER_EMAIL,
+            password: hashedPassword,
+            role: "admin",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+        logger.info("✅ Seeded 'sellers' with admin account.");
     }
   } else {
     logger.warn("⚠️ Database not connected, skipping collection check.");

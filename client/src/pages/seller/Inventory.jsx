@@ -4,7 +4,7 @@ import toast from 'react-hot-toast'
 
 const Inventory = () => {
 
-  const { backendUrl, axios, currency = '₹', products, fetchProducts } = useAppContext()
+  const { backendUrl, axios, currency = '₹', products = [], fetchProducts } = useAppContext()
   const [search, setSearch] = useState('')
   const [showLowStock, setShowLowStock] = useState(false)
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
@@ -19,14 +19,44 @@ const Inventory = () => {
   const [openMenuId, setOpenMenuId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1)
   const [activeTab, setActiveTab] = useState('inventory');
+  // History State
   const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [historyTotalPages, setHistoryTotalPages] = useState(1);
   const [historyStartDate, setHistoryStartDate] = useState("");
   const [historyEndDate, setHistoryEndDate] = useState("");
-  const itemsPerPage = 10
+  const itemsPerPage = 10;
 
-  const totalProducts = products.length;
-  const lowStockCount = products.filter(p => (p.quantity || p.stock || 0) <= 5 && (p.quantity || p.stock || 0) > 0).length;
-  const outOfStockCount = products.filter(p => (p.quantity || p.stock || 0) === 0).length;
+  const totalProducts = products?.length || 0;
+  const lowStockCount = products?.filter(p => (p.quantity || p.stock || 0) <= 5 && (p.quantity || p.stock || 0) > 0).length || 0;
+  const outOfStockCount = products?.filter(p => (p.quantity || p.stock || 0) === 0).length || 0;
+
+  const fetchHistory = async () => {
+    setHistoryLoading(true);
+    try {
+        let query = `?page=${historyPage}&limit=10`;
+        if (historyStartDate) query += `&startDate=${historyStartDate}`;
+        if (historyEndDate) query += `&endDate=${historyEndDate}`;
+
+        const { data } = await axios.get(backendUrl + '/api/seller/stock-history' + query, { withCredentials: true });
+        if (data.success) {
+            setHistory(data.history);
+            setHistoryTotalPages(data.pages);
+        }
+    } catch (error) {
+        console.log(error);
+        toast.error("Failed to fetch history");
+    } finally {
+        setHistoryLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'history') {
+        fetchHistory();
+    }
+  }, [activeTab, historyPage, historyStartDate, historyEndDate]);
 
   const updateStock = async (productId, newStock) => {
     const product = products.find(p => p._id === productId);
@@ -36,13 +66,8 @@ const Inventory = () => {
       const { data } = await axios.post(backendUrl + '/api/seller/update-stock', { productId, stock: newStock }, { withCredentials: true })
       if (data.success) {
         toast.success(data.message)
-        setHistory(prev => [{
-          id: Date.now(),
-          productName: product?.name || 'Unknown Product',
-          oldStock,
-          newStock,
-          date: new Date()
-        }, ...prev]);
+        // Refresh history if active
+        if (activeTab === 'history') fetchHistory();
         fetchProducts()
         return true
       } else {
@@ -55,6 +80,115 @@ const Inventory = () => {
       return false
     }
   }
+
+// ... existing useEffects ...
+
+  // Render History Table
+  const renderHistory = () => (
+    <div className='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2'>
+        <div className="p-4 border-b border-gray-200 flex flex-wrap gap-4 items-center bg-gray-50/50">
+            <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 font-medium">From:</span>
+                <input 
+                    type="date" 
+                    value={historyStartDate} 
+                    onChange={(e) => { setHistoryStartDate(e.target.value); setHistoryPage(1); }}
+                    className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-white"
+                />
+            </div>
+            <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 font-medium">To:</span>
+                <input 
+                    type="date" 
+                    value={historyEndDate} 
+                    onChange={(e) => { setHistoryEndDate(e.target.value); setHistoryPage(1); }}
+                    className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-white"
+                />
+            </div>
+            {(historyStartDate || historyEndDate) && (
+                <button 
+                    onClick={() => { setHistoryStartDate(''); setHistoryEndDate(''); setHistoryPage(1); }}
+                    className="text-sm text-red-500 hover:text-red-700 font-medium px-3 py-1.5 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                    Clear Filter
+                </button>
+            )}
+            <button 
+                onClick={fetchHistory} 
+                className="ml-auto text-gray-500 hover:text-primary transition-colors p-2 rounded-full hover:bg-gray-100"
+                title="Refresh"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-5 h-5 ${historyLoading ? 'animate-spin' : ''}`}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+            </button>
+        </div>
+        <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+            <thead className="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500 font-semibold">
+                <tr>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4">Product Name</th>
+                <th className="px-6 py-4 text-right">Old Stock</th>
+                <th className="px-6 py-4 text-right">New Stock</th>
+                <th className="px-6 py-4 text-right">Change</th>
+                </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 text-sm text-gray-700">
+                {historyLoading ? (
+                    <tr>
+                        <td colSpan="5" className="px-6 py-12 text-center">
+                             <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        </td>
+                    </tr>
+                ) : history.length === 0 ? (
+                    <tr>
+                        <td colSpan="5" className="px-6 py-12 text-center text-gray-400">
+                            No records found.
+                        </td>
+                    </tr>
+                ) : (
+                    history.map((record) => {
+                    const change = Number(record.newStock) - Number(record.oldStock);
+                    return (
+                        <tr key={record._id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                            {new Date(record.createdAt).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 font-medium text-gray-900">{record.productName}</td>
+                        <td className="px-6 py-4 text-right text-gray-500">{record.oldStock}</td>
+                        <td className="px-6 py-4 text-right font-medium">{record.newStock}</td>
+                        <td className={`px-6 py-4 text-right font-bold ${change > 0 ? 'text-green-600' : change < 0 ? 'text-red-600' : 'text-gray-400'}`}>
+                            {change > 0 ? '+' : ''}{change}
+                        </td>
+                        </tr>
+                    );
+                    })
+                )}
+            </tbody>
+            </table>
+        </div>
+        {historyTotalPages > 1 && (
+            <div className="flex justify-center items-center gap-4 py-4 border-t border-gray-200 bg-gray-50/50">
+                <button 
+                    onClick={() => setHistoryPage(prev => Math.max(prev - 1, 1))}
+                    disabled={historyPage === 1}
+                    className={`px-3 py-1 border rounded text-sm font-medium transition-colors ${historyPage === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100' : 'bg-white hover:bg-gray-50'}`}
+                >
+                    Previous
+                </button>
+                <span className="text-sm text-gray-600">Page {historyPage} of {historyTotalPages}</span>
+                <button 
+                    onClick={() => setHistoryPage(prev => Math.min(prev + 1, historyTotalPages))}
+                    disabled={historyPage === historyTotalPages}
+                    className={`px-3 py-1 border rounded text-sm font-medium transition-colors ${historyPage === historyTotalPages ? 'opacity-50 cursor-not-allowed bg-gray-100' : 'bg-white hover:bg-gray-50'}`}
+                >
+                    Next
+                </button>
+            </div>
+        )}
+    </div>
+  );
 
   useEffect(() => {
     fetchProducts()
@@ -91,25 +225,10 @@ const Inventory = () => {
     return sortableProducts;
   }, [products, sortConfig]);
 
-  const filteredHistory = useMemo(() => {
-    return history.filter(record => {
-      const recordDate = new Date(record.date);
-      if (historyStartDate) {
-          const [sy, sm, sd] = historyStartDate.split('-').map(Number);
-          const startDate = new Date(sy, sm - 1, sd);
-          if (recordDate < startDate) return false;
-      }
-      if (historyEndDate) {
-          const [ey, em, ed] = historyEndDate.split('-').map(Number);
-          const endDate = new Date(ey, em - 1, ed, 23, 59, 59, 999);
-          if (recordDate > endDate) return false;
-      }
-      return true;
-    });
-  }, [history, historyStartDate, historyEndDate]);
+// Removed filteredHistory as it is now handled by backend pagination/filtering
 
   const filteredProducts = sortedProducts.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase())
+    const matchesSearch = item.name?.toLowerCase().includes(search.toLowerCase()) || false
     const currentStock = item.quantity || item.stock || 0
     return matchesSearch && (showLowStock ? currentStock <= 5 : true)
   })
@@ -501,76 +620,7 @@ const Inventory = () => {
     
     
 
-        {activeTab === 'history' && (
-          <div className='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2'>
-            <div className="p-4 border-b border-gray-200 flex flex-wrap gap-4 items-center bg-gray-50/50">
-                <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600 font-medium">From:</span>
-                    <input 
-                        type="date" 
-                        value={historyStartDate} 
-                        onChange={(e) => setHistoryStartDate(e.target.value)}
-                        className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-white"
-                    />
-                </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600 font-medium">To:</span>
-                    <input 
-                        type="date" 
-                        value={historyEndDate} 
-                        onChange={(e) => setHistoryEndDate(e.target.value)}
-                        className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-white"
-                    />
-                </div>
-                {(historyStartDate || historyEndDate) && (
-                    <button 
-                        onClick={() => { setHistoryStartDate(''); setHistoryEndDate(''); }}
-                        className="text-sm text-red-500 hover:text-red-700 font-medium px-3 py-1.5 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                        Clear Filter
-                    </button>
-                )}
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead className="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500 font-semibold">
-                  <tr>
-                    <th className="px-6 py-4">Date</th>
-                    <th className="px-6 py-4">Product Name</th>
-                    <th className="px-6 py-4 text-right">Old Stock</th>
-                    <th className="px-6 py-4 text-right">New Stock</th>
-                    <th className="px-6 py-4 text-right">Change</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 text-sm text-gray-700">
-                  {filteredHistory.map((record) => {
-                    const change = Number(record.newStock) - Number(record.oldStock);
-                    return (
-                      <tr key={record.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                          {record.date.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 font-medium text-gray-900">{record.productName}</td>
-                        <td className="px-6 py-4 text-right text-gray-500">{record.oldStock}</td>
-                        <td className="px-6 py-4 text-right font-medium">{record.newStock}</td>
-                        <td className={`px-6 py-4 text-right font-bold ${change > 0 ? 'text-green-600' : change < 0 ? 'text-red-600' : 'text-gray-400'}`}>
-                          {change > 0 ? '+' : ''}{change}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  {filteredHistory.length === 0 && (
-                    <tr>
-                      <td colSpan="5" className="px-6 py-12 text-center text-gray-400">
-                        {history.length === 0 ? "No stock updates recorded in this session." : "No records found for the selected date range."}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+{activeTab === 'history' && renderHistory()}
       </div>
 
       {isBulkUpdateModalOpen && (

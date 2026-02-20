@@ -1,8 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 
 const ProductList = () => {
+  const navigate = useNavigate();
   const {
     products,
     currency,
@@ -95,6 +97,7 @@ const ProductList = () => {
                     Max Order Qty
                   </th>
                   <th className="px-6 py-4 text-center">Stock</th>
+                  <th className="px-6 py-4 text-center">Action</th>
                 </tr>
               </thead>
 
@@ -183,6 +186,19 @@ const ProductList = () => {
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                       </label>
+
+                    </td>
+
+                    <td className="px-6 py-4 text-center">
+                        <button
+                            onClick={() => navigate(`/seller/product-list/edit/${product._id}`)}
+                            className="p-2 text-gray-500 hover:text-primary hover:bg-gray-100 rounded-lg transition-all"
+                            title="Edit Product"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                            </svg>
+                        </button>
                     </td>
                   </tr>
                 ))}

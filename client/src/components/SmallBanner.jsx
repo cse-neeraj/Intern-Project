@@ -22,7 +22,7 @@ const SmallBanner = () => {
         >
           {banner.image && (
             <>
-                <img src={banner.image} alt={banner.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
+                <img src={banner.image} alt={banner.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105" loading="lazy" />
                 <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors"></div>
             </>
           )}

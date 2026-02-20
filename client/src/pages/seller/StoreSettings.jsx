@@ -151,9 +151,8 @@ const StoreSettings = () => {
                 </form>
             </div>
         </div>
+        </div>
       </div>
-    </div>
   );
 };
-
 export default StoreSettings;

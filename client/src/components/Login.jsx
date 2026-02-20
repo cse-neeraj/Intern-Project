@@ -63,12 +63,9 @@ const Login = () => {
           { withCredentials: true }
         );
         if (response.success) {
-          setToken(response.token);
-          setUser(response.user);
-          setToken(response.token);
-          setUser(response.user);
-          setShowUserLogin(false);
-          toast.success(response.message);
+          toast.success("Account created successfully! Please login.");
+          setData({ name: "", email: "", password: "" });
+          setCurrentState("Login");
         } else {
           toast.error(response.message);
         }

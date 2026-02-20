@@ -41,6 +41,18 @@ const ProductSchema = new mongoose.Schema(
     maxOrderQuantity: {
       type: Number,
     },
+    weight: {
+      type: String,
+    },
+    shelfLife: {
+      type: String,
+    },
+    manufacturer: {
+      type: String,
+    },
+    countryOfOrigin: {
+      type: String,
+    },
   },
   { timestamps: true },
 );

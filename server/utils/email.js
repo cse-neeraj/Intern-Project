@@ -37,16 +37,7 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
             tls: {
                 rejectUnauthorized: false // Helps avoid self-signed cert errors in some cloud envs
             },
-            // Debugging options
-            debug: true,
-            logger: true
         };
-
-        console.log("📧 Email Config:", {
-            host: smtpHost,
-            port: smtpPort,
-            user: transportConfig.auth.user ? '***' + transportConfig.auth.user.slice(-4) : 'MISSING'
-        });
 
         const transporter = nodemailer.createTransport(transportConfig);
 

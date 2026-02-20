@@ -11,6 +11,7 @@ const authSeller = async (req, res, next) => {
         const token_decode = jwt.verify(sellerToken, process.env.JWT_SECRET);
         if (!req.body) req.body = {};
         req.body.sellerId = token_decode.id;
+        req.sellerId = token_decode.id;
         next();
 
     } catch (error) {

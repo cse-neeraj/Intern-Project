@@ -64,6 +64,8 @@ export const placeOrderCOD = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+
 // Place Order Stripe : /api/order/stripe
 export const placeOrderStripe = async (req, res) => {
   try {

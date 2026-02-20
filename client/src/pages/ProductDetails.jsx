@@ -234,15 +234,15 @@ const ProductDetails = () => {
                     </div>
                     <div>
                         <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Shelf Life</h4>
-                        <p className="text-sm text-gray-700 font-medium">Refer to pack</p>
+                        <p className="text-sm text-gray-700 font-medium">{product.shelfLife || "Refer to pack"}</p>
                     </div>
                     <div>
                         <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Manufacturer</h4>
-                        <p className="text-sm text-gray-700 font-medium">FreshBuy Pvt Ltd</p>
+                        <p className="text-sm text-gray-700 font-medium">{product.manufacturer || "FreshBuy Pvt Ltd"}</p>
                     </div>
                     <div>
                         <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Country of Origin</h4>
-                        <p className="text-sm text-gray-700 font-medium">India</p>
+                        <p className="text-sm text-gray-700 font-medium">{product.countryOfOrigin || "India"}</p>
                     </div>
                 </div>
             </div>

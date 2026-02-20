@@ -48,11 +48,15 @@ const MainBanner = ({ page = 'home', category }) => {
               src={banner?.image || assets.main_banner_bg}
               alt="banner"
               className="w-full h-full hidden md:block object-cover"
+              loading={index === 0 ? "eager" : "lazy"}
+              fetchPriority={index === 0 ? "high" : "auto"}
             />
             <img
               src={banner?.image || assets.main_banner_bg_sm}
               alt="banner"
               className="w-full h-full md:hidden object-cover"
+              loading={index === 0 ? "eager" : "lazy"}
+              fetchPriority={index === 0 ? "high" : "auto"}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent flex flex-col items-center md:items-start justify-center px-6 md:pl-20 lg:pl-32">
               <div className="max-w-3xl space-y-6 text-center md:text-left">
