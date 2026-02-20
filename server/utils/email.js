@@ -8,7 +8,7 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
             return await sendGmailApi({ to, subject, html });
         }
 
-        console.warn("⚠️ GMAIL_REFRESH_TOKEN missing. Falling back to SMTP (May fail on Render).");
+        console.log("ℹ️ GMAIL_REFRESH_TOKEN not found. Falling back to SMTP (Render-safe Port 587).");
 
         const emailUser = process.env.EMAIL_USER || process.env.SMTP_MAIL || process.env.SMTP_USER;
         const emailPass = process.env.EMAIL_PASS || process.env.SMTP_PASSWORD || process.env.SMTP_PASS;
