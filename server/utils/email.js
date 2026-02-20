@@ -44,8 +44,12 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
                 },
                 tls: {
                     rejectUnauthorized: false
-                }
+                },
+                debug: true, // Show SMTP handshake in logs
+                logger: true, // Enable built-in logger
+                family: 4 // Force IPv4 (Fixes common Node/Render IPv6 issues)
             };
+            console.log(`Configured SMTP: ${transportConfig.host}:${transportConfig.port} (User: ${emailUser})`);
         } else {
             console.log(`Using custom SMTP configuration: ${smtpHost}:${smtpPort}`);
             transportConfig = {
