@@ -23,21 +23,36 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
         const nodemailer = (await import('nodemailer')).default;
 
         const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
-        // Default to 587 as it is more reliable on cloud hosting (Render) than 465
         const smtpPort = Number(process.env.SMTP_PORT) || 587;
 
-        const transportConfig = {
-            host: smtpHost,
-            port: smtpPort,
-            secure: smtpPort === 465, // true for 465, false for other ports
-            auth: {
-                user: emailUser.trim(),
-                pass: emailPass.replace(/\s+/g, '')
-            },
-            tls: {
-                rejectUnauthorized: false // Helps avoid self-signed cert errors in some cloud envs
-            },
-        };
+        let transportConfig;
+
+        // If using Gmail, use the 'service' shorthand which is often more reliable
+        // on cloud environments like Render that might block specific ports.
+        if (smtpHost.includes('gmail')) {
+            console.log("Using 'service: gmail' configuration for Nodemailer.");
+            transportConfig = {
+                service: 'gmail',
+                auth: {
+                    user: emailUser.trim(),
+                    pass: emailPass.replace(/\s+/g, '')
+                }
+            };
+        } else {
+            console.log(`Using custom SMTP configuration: ${smtpHost}:${smtpPort}`);
+            transportConfig = {
+                host: smtpHost,
+                port: smtpPort,
+                secure: smtpPort === 465, // true for 465, false for other ports
+                auth: {
+                    user: emailUser.trim(),
+                    pass: emailPass.replace(/\s+/g, '')
+                },
+                tls: {
+                    rejectUnauthorized: false // Helps avoid self-signed cert errors in some cloud envs
+                },
+            };
+        }
 
         const transporter = nodemailer.createTransport(transportConfig);
 
