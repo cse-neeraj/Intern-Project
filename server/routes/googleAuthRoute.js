@@ -39,8 +39,6 @@ googleAuthRouter.get('/google/callback', (req, res, next) => {
       // Send OTP Email
       if (user.email) {
         console.log(`Sending Google Login OTP to: ${user.email}`);
-        console.log(`🔐 LOGIN OTP (Manual Retrieval): ${otp}`); // Log OTP for Render logs
-
         const emailContent = verifyOtpEmail(otp, user.name || 'User');
         
         try {
