@@ -44,23 +44,22 @@ googleAuthRouter.get('/google/callback', (req, res, next) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      // Send successful login email
+      // Send successful login email asynchronously in the background
+      // This prevents the login flow from waiting for the email to send
       if (user.email) {
-        console.log(`Sending Google Login Success Email to: ${user.email}`);
+        console.log(`Queueing Google Login Success Email to: ${user.email}`);
         const emailContent = googleLoginEmail(user.name || 'User');
         
-        try {
-            await sendEmail({
-              to: user.email,
-              subject: 'New Login Alert - Greencart',
-              html: emailContent
-            });
-        } catch (emailErr) {
-            console.error("⚠️ Soft Error: Login Email failed to send, but proceeding to login.", emailErr.message);
-        }
+        sendEmail({
+            to: user.email,
+            subject: 'New Login Alert - Greencart',
+            html: emailContent
+        }).catch(emailErr => {
+            console.error("⚠️ Background Error: Login Email failed to send.", emailErr.message);
+        });
       }
 
-      // Redirect directly to frontend Home page, user is now logged in
+      // Redirect directly to frontend Home page IMMEDIATELY
       return res.redirect(`${frontendUrl}/`);
 
     } catch (error) {
