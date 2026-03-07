@@ -30,35 +30,42 @@ googleAuthRouter.get('/google/callback', (req, res, next) => {
     }
 
     try {
-      // Generate OTP
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      user.otp = otp;
-      user.otpExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+      // Remove old OTP logic, login user directly
+      user.otp = undefined;
+      user.otpExpire = undefined;
       await user.save();
 
-      // Send OTP Email
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      // Send successful login email
       if (user.email) {
-        console.log(`Sending Google Login OTP to: ${user.email}`);
-        const emailContent = verifyOtpEmail(otp, user.name || 'User');
+        console.log(`Sending Google Login Success Email to: ${user.email}`);
+        const emailContent = googleLoginEmail(user.name || 'User');
         
         try {
             await sendEmail({
               to: user.email,
-              subject: 'Verify Your Login - Greencart',
+              subject: 'New Login Alert - Greencart',
               html: emailContent
             });
         } catch (emailErr) {
-            console.error("⚠️ Soft Error: OTP Email failed to send (likely Render block), but proceeding to verification page.", emailErr.message);
+            console.error("⚠️ Soft Error: Login Email failed to send, but proceeding to login.", emailErr.message);
         }
       }
 
-      // Redirect to frontend OTP verification page
-      return res.redirect(`${frontendUrl}/verify-otp?email=${encodeURIComponent(user.email)}&isGoogle=true`);
+      // Redirect directly to frontend Home page, user is now logged in
+      return res.redirect(`${frontendUrl}/`);
 
     } catch (error) {
-      logger.error(`Google Auth OTP Error: ${error.message}`);
-      // Redirect to Home with error param so helpful toast can be shown
-      return res.redirect(`${frontendUrl}/?error=email_failed`);
+      logger.error(`Google Auth Error: ${error.message}`);
+      return res.redirect(`${frontendUrl}/?error=auth_failed`);
     }
   })(req, res, next);
 });
