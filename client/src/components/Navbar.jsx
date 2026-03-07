@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 import io from "socket.io-client";
 
 const Navbar = () => {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -15,7 +17,6 @@ const Navbar = () => {
     user,
     setUser,
     setShowUserLogin,
-    navigate,
     setSearchQuery,
     searchQuery,
     cartItems,
@@ -157,36 +158,35 @@ const Navbar = () => {
   return (
     <nav className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50 shadow-sm transition-all">
       <div className="flex items-center justify-between px-4 sm:px-8 md:px-14 lg:px-20 py-3 md:py-4 transition-all max-w-[1440px] mx-auto w-full">
-        <NavLink to="/" onClick={() => setOpen(false)}>
+        <Link to="/" onClick={() => setOpen(false)}>
           <img className="h-8 md:h-10 w-auto object-contain hover:scale-105 transition-transform duration-300" src={assets.logo} alt="logo" />
-        </NavLink>
+        </Link>
 
         <div className="hidden sm:flex items-center gap-6">
-          <NavLink
+          <Link
             to="/"
-            end
-            className={({ isActive }) =>
-              isActive ? "text-primary font-bold text-sm uppercase tracking-wide" : "text-gray-600 hover:text-primary transition-colors text-sm font-medium uppercase tracking-wide"
+            className={
+              pathname === "/" ? "text-primary font-bold text-sm uppercase tracking-wide" : "text-gray-600 hover:text-primary transition-colors text-sm font-medium uppercase tracking-wide"
             }
           >
             Home
-          </NavLink>
-          <NavLink
+          </Link>
+          <Link
             to="/products"
-            className={({ isActive }) =>
-              isActive ? "text-primary font-bold text-sm uppercase tracking-wide" : "text-gray-600 hover:text-primary transition-colors text-sm font-medium uppercase tracking-wide"
+            className={
+              pathname.startsWith("/products") ? "text-primary font-bold text-sm uppercase tracking-wide" : "text-gray-600 hover:text-primary transition-colors text-sm font-medium uppercase tracking-wide"
             }
           >
             All Products
-          </NavLink>
-          <NavLink
+          </Link>
+          <Link
             to="/contact"
-            className={({ isActive }) =>
-              isActive ? "text-primary font-bold text-sm uppercase tracking-wide" : "text-gray-600 hover:text-primary transition-colors text-sm font-medium uppercase tracking-wide"
+            className={
+              pathname === "/contact" ? "text-primary font-bold text-sm uppercase tracking-wide" : "text-gray-600 hover:text-primary transition-colors text-sm font-medium uppercase tracking-wide"
             }
           >
             Contact
-          </NavLink>
+          </Link>
 
           <div className="hidden lg:flex items-center w-64 xl:w-80 px-4 py-2.5 rounded-full bg-gray-50 border border-gray-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-300 group shadow-sm hover:shadow-md">
             <input
@@ -391,39 +391,38 @@ const Navbar = () => {
             open ? "flex" : "hidden"
           } w-full bg-white border-t border-gray-200 py-4 flex-col items-start gap-2 px-5 text-sm md:hidden`}
         >
-          <NavLink
+          <Link
             to="/"
-            end
             onClick={() => setOpen(false)}
-            className={({ isActive }) => (isActive ? "block text-primary font-bold bg-primary/5 px-4 py-2 rounded-lg w-full" : "block text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-lg w-full transition-colors")}
+            className={(pathname === "/" ? "block text-primary font-bold bg-primary/5 px-4 py-2 rounded-lg w-full" : "block text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-lg w-full transition-colors")}
           >
             Home
-          </NavLink>
-          <NavLink
+          </Link>
+          <Link
             to="/products"
             onClick={() => setOpen(false)}
-            className={({ isActive }) => (isActive ? "block text-primary font-bold bg-primary/5 px-4 py-2 rounded-lg w-full" : "block text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-lg w-full transition-colors")}
+            className={(pathname.startsWith("/products") ? "block text-primary font-bold bg-primary/5 px-4 py-2 rounded-lg w-full" : "block text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-lg w-full transition-colors")}
           >
             All Products
-          </NavLink>
+          </Link>
           {user && (
-            <NavLink to="/my-orders" onClick={() => setOpen(false)} className="block text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-lg w-full transition-colors">
+            <Link to="/my-orders" onClick={() => setOpen(false)} className="block text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-lg w-full transition-colors">
               My Orders
-            </NavLink>
+            </Link>
           )}
           {user && (
-            <NavLink to="/my-subscriptions" onClick={() => setOpen(false)} className="block text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-lg w-full transition-colors">
+            <Link to="/my-subscriptions" onClick={() => setOpen(false)} className="block text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-lg w-full transition-colors">
               My Subscriptions
-            </NavLink>
+            </Link>
           )}
 
-          <NavLink
+          <Link
             to="/contact"
             onClick={() => setOpen(false)}
-            className={({ isActive }) => (isActive ? "block text-primary font-bold bg-primary/5 px-4 py-2 rounded-lg w-full" : "block text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-lg w-full transition-colors")}
+            className={(pathname === "/contact" ? "block text-primary font-bold bg-primary/5 px-4 py-2 rounded-lg w-full" : "block text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-lg w-full transition-colors")}
           >
             Contact
-          </NavLink>
+          </Link>
 
           {!user ? (
             <button
