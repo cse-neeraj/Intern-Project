@@ -119,9 +119,28 @@ export const AppContextProvider = (props) => {
   };
 
   useEffect(() => {
+    // Global Axios Interceptor for injecting token
+    // This fixes "Not Authorized" issues in deployed environments like Render 
+    // where third-party cookies (sameSite: none) often get unexpectedly stripped or blocked.
+    const requestInterceptor = axios.interceptors.request.use(
+      (config) => {
+        const storedToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+        if (storedToken) {
+          config.headers.Authorization = `Bearer ${storedToken}`;
+          config.headers.token = storedToken; // Fallback for your authMiddleware
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
     getProducts();
     getCategories();
     getBanners();
+
+    return () => {
+      axios.interceptors.request.eject(requestInterceptor);
+    };
   }, []);
 
   const value = {

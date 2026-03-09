@@ -27,17 +27,13 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
 
         let transportConfig;
 
-        // If using Gmail, use the 'service' shorthand which is often more reliable
-        // on cloud environments like Render that might block specific ports.
+        // If using Gmail, use the 'service' shorthand which is inherently reliable
+        // across most cloud environments including Render, as Nodemailer handles 
+        // the required ports and TLS settings internally.
         if (smtpHost.includes('gmail')) {
             console.log("Using 'service: gmail' configuration for Nodemailer.");
-            // Render often blocks port 465. We force port 587 by NOT using 'service: gmail' blindly
-            // or by explicitly setting the port if the service option allows (it often overrides).
-            // Better to use explicit host/port for control on Render.
             transportConfig = {
-                host: 'smtp.gmail.com',
-                port: 587,
-                secure: false, // Must be false for port 587 (STARTTLS)
+                service: 'gmail',
                 auth: {
                     user: emailUser.trim(),
                     pass: emailPass.replace(/\s+/g, '')
@@ -45,11 +41,10 @@ export const sendEmail = async ({ to, subject, html, text, attachments }) => {
                 tls: {
                     rejectUnauthorized: false
                 },
-                debug: true, // Show SMTP handshake in logs
-                logger: true, // Enable built-in logger
-                family: 4 // Force IPv4 (Fixes common Node/Render IPv6 issues)
+                debug: true, 
+                logger: true, 
             };
-            console.log(`Configured SMTP: ${transportConfig.host}:${transportConfig.port} (User: ${emailUser})`);
+            console.log(`Configured SMTP using Gmail Service (User: ${emailUser})`);
         } else {
             console.log(`Using custom SMTP configuration: ${smtpHost}:${smtpPort}`);
             transportConfig = {
