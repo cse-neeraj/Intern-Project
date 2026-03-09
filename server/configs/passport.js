@@ -32,22 +32,16 @@ passport.use(new GoogleStrategy({
 
       if (user) {
         console.log("Found existing user:", user.email);
-        console.log("Current profilePicture:", user.profilePicture);
         
-        // Force update for debugging or if meaningful change
         if (profile.photos && profile.photos.length > 0) {
            const googlePhoto = profile.photos[0].value;
-           console.log("Google has photo:", googlePhoto);
-           // Only set profile picture if user doesn't have one
-           if (!user.profilePicture) {
-               console.log("Setting user profile picture from Google...");
+           
+           // Update profile picture if missing, or if it's already a Google URL (to keep it fresh),
+           // avoiding overwriting custom uploaded images.
+           if (!user.profilePicture || user.profilePicture.includes('googleusercontent')) {
                user.profilePicture = googlePhoto;
                await user.save();
-           } else {
-               console.log("User already has a profile picture. Skipping Google photo sync.");
            }
-        } else {
-            console.log("No photos in Google profile.");
         }
       } else {
         console.log("Creating new user...");

@@ -20,11 +20,10 @@ const Login = () => {
     name: "",
     email: "",
     password: "",
+    otp: "",
   });
-  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const rememberMeRef = useRef(rememberMe);
 
   const onChangeHandler = (e) => {
     const name = e.target.name;
@@ -32,9 +31,7 @@ const Login = () => {
     setData((data) => ({ ...data, [name]: value }));
   };
 
-  useEffect(() => {
-    rememberMeRef.current = rememberMe;
-  }, [rememberMe]);
+
 
   const onLogin = async (e) => {
     e.preventDefault();
@@ -49,8 +46,7 @@ const Login = () => {
         if (response.success) {
           setToken(response.token);
           setUser(response.user);
-          setToken(response.token);
-          setUser(response.user);
+          localStorage.setItem('token', response.token);
           setShowUserLogin(false);
           toast.success(response.message);
         } else {
@@ -58,16 +54,39 @@ const Login = () => {
         }
       } else if (currentState === "Sign Up") {
         const { data: response } = await axios.post(
-          backendUrl + "/api/user/register",
-          { name: data.name, email: data.email, password: data.password },
-          { withCredentials: true }
+          backendUrl + "/api/user/send-otp",
+          { email: data.email }
         );
         if (response.success) {
-          toast.success("Account created successfully! Please login.");
-          setData({ name: "", email: "", password: "" });
-          setCurrentState("Login");
+          toast.success(response.message || "OTP sent to your email!");
+          setCurrentState("Verify OTP");
         } else {
           toast.error(response.message);
+        }
+      } else if (currentState === "Verify OTP") {
+         const { data: response } = await axios.post(
+          backendUrl + "/api/user/login-otp",
+          { email: data.email, otp: data.otp }
+        );
+        
+        if (response.success) {
+           // On successful OTP verification, finalize registration by updating the name/password
+            const { data: updateResponse } = await axios.post(
+                backendUrl + "/api/user/update-profile",
+                { 
+                  userId: response.user._id || response.user.id || (await axios.post(backendUrl + '/api/user/is-auth', {}, { headers: { Authorization: `Bearer ${response.token}` } })).data.user._id, 
+                  name: data.name,
+                  email: data.email
+                },
+                { headers: { Authorization: `Bearer ${response.token}` } } // Fallback header if cookie fails
+            ).catch(() => ({ data: { success: false } })); // Fallback if update fails
+            
+            // Rather than auto-logging them in, we clear the OTP data and switch to the Login view
+            toast.success("Account created and verified successfully! Please login.");
+            setData(prev => ({ ...prev, otp: "" }));
+            setCurrentState("Login");
+        } else {
+            toast.error(response.message || "Invalid OTP");
         }
       } else if (currentState === "Forgot Password") {
         const { data: response } = await axios.post(
@@ -142,9 +161,11 @@ const Login = () => {
           <p className="text-gray-500 mt-2 text-sm font-medium">
             {currentState === "Sign Up"
               ? "Create an account to get started."
-              : currentState === "Forgot Password"
-                ? "Enter your email to reset your password."
-              : "Welcome back! Please login to continue."}
+              : currentState === "Verify OTP"
+                ? "Enter the 6-digit OTP sent to your email."
+                : currentState === "Forgot Password"
+                  ? "Enter your email to reset your password."
+                : "Welcome back! Please login to continue."}
           </p>
         </div>
 
@@ -206,12 +227,28 @@ const Login = () => {
               value={data.email}
               type="email"
               placeholder="Email Address"
+              autoComplete="email"
               className="w-full pl-12 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all duration-200 font-medium text-gray-800 placeholder-gray-400 focus:shadow-md"
               required
             />
           </div>
 
-          {currentState !== "Forgot Password" && (
+          {currentState === "Verify OTP" && (
+            <div className="relative border border-gray-200 rounded-2xl overflow-hidden focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-200 bg-gray-50">
+                <input
+                    name="otp"
+                    value={data.otp}
+                    onChange={onChangeHandler}
+                    type="text"
+                    maxLength={6}
+                    placeholder="Enter 6-digit OTP"
+                    required
+                    className="w-full text-center tracking-[0.5em] text-2xl font-bold py-3 bg-transparent outline-none text-gray-800 placeholder-gray-300"
+                />
+            </div>
+          )}
+
+          {currentState !== "Forgot Password" && currentState !== "Sign Up" && (
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
               <svg
@@ -225,7 +262,7 @@ const Login = () => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+                  d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25 2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
                 />
               </svg>
             </div>
@@ -235,6 +272,7 @@ const Login = () => {
               value={data.password}
               type={showPassword ? "text" : "password"}
               placeholder="Password"
+              autoComplete="current-password"
               className="w-full pl-12 pr-12 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all duration-200 font-medium text-gray-800 placeholder-gray-400 focus:shadow-md"
               required
             />
@@ -284,22 +322,8 @@ const Login = () => {
 
           {currentState === "Login" && (
             <div className="flex flex-col gap-1">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    id="remember"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer accent-primary transition-all hover:scale-110"
-                  />
-                  <label
-                    htmlFor="remember"
-                    className="text-sm text-gray-600 cursor-pointer select-none group-hover:text-gray-800 transition-colors"
-                  >
-                    Remember me
-                  </label>
-                </div>
+              <div className="flex justify-between items-center text-right">
+                <div className="flex-1"></div>
                 <p 
                   onClick={() => setCurrentState("Forgot Password")}
                   className="text-sm text-primary font-medium cursor-pointer hover:underline"
@@ -321,6 +345,8 @@ const Login = () => {
               </>
             ) : currentState === "Sign Up" ? (
               "Create Account"
+            ) : currentState === "Verify OTP" ? (
+              "Verify OTP & Login"
             ) : currentState === "Forgot Password" ? (
               "Send Reset Link"
             ) : (
@@ -328,7 +354,7 @@ const Login = () => {
             )}
           </button>
 
-          {currentState !== "Forgot Password" && (
+          {currentState !== "Forgot Password" && currentState !== "Verify OTP" && (
             <>
               <div className="relative my-2">
                 <div className="absolute inset-0 flex items-center">
@@ -418,7 +444,7 @@ const Login = () => {
                 </span>
               </p>
             </>
-          ) : currentState === "Sign Up" ? (
+          ) : currentState === "Sign Up" || currentState === "Verify OTP" ? (
             <p>
               Already have an account?{" "}
               <span

@@ -32,6 +32,8 @@ const Navbar = () => {
       if(data.success){
         toast.success(data.message)
         setToken(null)
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
         navigate("/");
         setUser(null);
       }else{
@@ -305,7 +307,7 @@ const Navbar = () => {
             <div className="flex items-center gap-4">
             <div className="relative group">
               <div className="cursor-pointer w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 hover:border-primary transition-colors overflow-hidden">
-                  <img src={user.profilePicture || assets.profile_icon} className="w-full h-full object-cover opacity-80" alt="Profile" />
+                  <img src={user.profilePicture || assets.profile_icon} referrerPolicy="no-referrer" className="w-full h-full object-cover opacity-80" alt="Profile" />
               </div>
               
               <div className="hidden group-hover:block absolute top-full right-0 pt-2 z-40">

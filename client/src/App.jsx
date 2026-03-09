@@ -64,13 +64,16 @@ const App = () => {
     checkSellerAuth();
 
     const fetchUser = async () => {
-      const storedToken = localStorage.getItem("token");
+      const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
       if (!storedToken) {
           setLoading(false);
           return;
       }
       try {
-        const { data } = await axios.post(backendUrl + '/api/user/is-auth', {}, { withCredentials: true });
+        const { data } = await axios.post(backendUrl + '/api/user/is-auth', {}, { 
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${storedToken}` }
+        });
         if (data.success) {
           setUser(data.user);
         } else {

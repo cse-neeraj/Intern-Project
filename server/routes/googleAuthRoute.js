@@ -59,8 +59,8 @@ googleAuthRouter.get('/google/callback', (req, res, next) => {
         });
       }
 
-      // Redirect directly to frontend Home page IMMEDIATELY
-      return res.redirect(`${frontendUrl}/`);
+      // Redirect directly to frontend Home page IMMEDIATELY with token in URL
+      return res.redirect(`${frontendUrl}/?token=${token}`);
 
     } catch (error) {
       logger.error(`Google Auth Error: ${error.message}`);
